@@ -79,6 +79,9 @@ namespace Convoquei.Core.Eventos.Entidades
 
         public void AdicionarParticipante(MembroOrganizacao membro)
         {
+            if (Status != StatusEventoEnum.Ativo)
+                throw new RegraDeNegocioExcecao("Não é permitido adicionar participante a um evento que não esteja ativo.");
+
             if(membro.Organizacao.Id != Organizacao.Id)
                 throw new RegraDeNegocioExcecao($"O membro {membro} não pertence à organização do evento.");
             if (Participacoes.Any(p => p.Usuario.Id == membro.Usuario.Id))
@@ -91,6 +94,9 @@ namespace Convoquei.Core.Eventos.Entidades
 
         public void RemoverParticipante(MembroOrganizacao membro)
         {
+            if (Status != StatusEventoEnum.Ativo)
+                throw new RegraDeNegocioExcecao("Não é permitido remover participante de um evento que não esteja ativo.");
+
             ParticipanteEvento? participacao = Participacoes.FirstOrDefault(p => p.Usuario.Id == membro.Usuario.Id);
             if (participacao is not null)
                 _participacoes.Remove(participacao);
