@@ -1,0 +1,108 @@
+# Build
+bin/
+obj/
+out/
+
+# User-specific files
+*.user
+*.userosscache
+*.suo
+*.sln.docstates
+.vscode/
+.idea/
+.vs/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Rider
+*.sln.iml
+
+# dotCover
+*.dotCover
+
+# Test Results
+TestResults/
+*.trx
+*.coverage
+*.coveragexml
+*.log
+*.log.*
+
+# Code Coverage
+coverage/
+coverage.cobertura.xml
+.coverage/
+.coverage-results/
+lcov-report/
+coverage.info
+*.lcov
+
+# NUnit
+*.VisualState.xml
+TestResult.xml
+
+# xUnit
+*.xml
+
+# Reports
+coveragereport/
+BenchmarkDotNet.Artifacts/
+
+# Auto-generated files
+Generated_Code/
+
+# Paket
+.paket/
+paket-files/
+paket.dependencies
+paket.lock
+
+# NuGet
+*.nupkg
+*.snupkg
+*.nuspec
+.project.lock.json
+project.lock.json
+project.assets.json
+artifacts/
+.nuget/
+packages/
+*.psmdcp
+
+# ASP.NET
+wwwroot/
+appsettings.*.json
+
+# Logs
+*.log
+logs/
+log/
+
+# User secrets
+secrets.json
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+
+# Cake
+tools/
+.cake/
+*.cake.lock
+build/
+buildArtifacts/
+
+# ReSharper
+_ReSharper*/
+*.DotSettings.user
+*.ReSharper
+
+# LocalDB
+*.mdf
+*.ldf
+
+# EF Core Migrations snapshot
+*MigrationsSnapshot.cs
