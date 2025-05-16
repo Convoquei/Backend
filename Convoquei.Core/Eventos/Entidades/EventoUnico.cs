@@ -14,7 +14,7 @@ namespace Convoquei.Core.Eventos.Entidades
             string descricao,
             DateTime dataHora,
             Organizacao organizacao,
-            Membro criador,
+            MembroOrganizacao criador,
             int minutosAntesParaFechamentoAutomatico) : base(nome, categoria, local, descricao, dataHora, organizacao, criador, minutosAntesParaFechamentoAutomatico)
         {
         }

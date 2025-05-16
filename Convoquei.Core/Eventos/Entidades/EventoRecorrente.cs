@@ -17,7 +17,7 @@ namespace Convoquei.Core.Eventos.Entidades
             string descricao,
             DateTime dataHora,
             Organizacao organizacao,
-            Membro membroCriador,
+            MembroOrganizacao membroCriador,
             int minutosAntesParaFechamentoAutomatico) : base(nome, categoria, local, descricao, dataHora, organizacao, membroCriador, minutosAntesParaFechamentoAutomatico)
         {
             if(diasRecorrencia == DiasDaSemanaEnum.Nenhum)

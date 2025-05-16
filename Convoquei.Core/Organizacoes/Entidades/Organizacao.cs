@@ -12,8 +12,8 @@ namespace Convoquei.Core.Organizacoes.Entidades
         public string Nome { get; private set; }
         public Usuario Criador => Membros.FirstOrDefault(m => m.Cargo == CargoMembroEnum.Criador)!.Usuario;
 
-        private readonly HashSet<Membro> _membros = new();
-        public IReadOnlyCollection<Membro> Membros => _membros;
+        private readonly HashSet<MembroOrganizacao> _membros = new();
+        public IReadOnlyCollection<MembroOrganizacao> Membros => _membros;
 
         private readonly HashSet<EventoBase> _eventos = new();
         public IReadOnlyCollection<EventoBase> Eventos => _eventos;
@@ -22,7 +22,7 @@ namespace Convoquei.Core.Organizacoes.Entidades
         {
             Nome = nome;
             
-            Membro membroCriador = new(usuario, this, CargoMembroEnum.Criador);
+            MembroOrganizacao membroCriador = new(usuario, this, CargoMembroEnum.Criador);
             _membros.Add(membroCriador);
         }
 
@@ -30,7 +30,7 @@ namespace Convoquei.Core.Organizacoes.Entidades
 
         public void AdicionarMembro(Usuario usuario)
         {
-            Membro membro = new(usuario, this, CargoMembroEnum.Membro);
+            MembroOrganizacao membro = new(usuario, this, CargoMembroEnum.Membro);
 
             if (!_membros.Add(membro))
                 throw new RegraDeNegocioExcecao($"O membro {membro} já pertence à organização.");
@@ -41,7 +41,7 @@ namespace Convoquei.Core.Organizacoes.Entidades
 
         public void RemoverMembro(Usuario usuario)
         {
-            Membro? membro = _membros.FirstOrDefault(m => m.Usuario.Equals(usuario));
+            MembroOrganizacao? membro = _membros.FirstOrDefault(m => m.Usuario.Equals(usuario));
             if (membro is null)
                 throw new RegraDeNegocioExcecao($"O membro {membro} não pertence à organização.");
 
@@ -61,7 +61,7 @@ namespace Convoquei.Core.Organizacoes.Entidades
                 throw new RegraDeNegocioExcecao("A organização não pode ser deletada enquanto houver eventos ativos.");
         }
 
-        private void PopularPossivelParticipacaoEventosAtivos(Membro membro)
+        private void PopularPossivelParticipacaoEventosAtivos(MembroOrganizacao membro)
         {
             foreach (EventoBase evento in _eventos)
             {
@@ -72,7 +72,7 @@ namespace Convoquei.Core.Organizacoes.Entidades
             }
         }
 
-        private void RemoverParticipacoesEventoAtivos(Membro membro)
+        private void RemoverParticipacoesEventoAtivos(MembroOrganizacao membro)
         {
             foreach (EventoBase evento in _eventos)
             {

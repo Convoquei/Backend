@@ -23,8 +23,8 @@ namespace Convoquei.Core.Eventos.Entidades
         public DelecaoEvento? DadosDelecao { get; private set; }
         public abstract TipoEventoEnum Tipo { get; }
         public int MinutosAntesParaFechamentoAutomatico { get; private set; }
-        private readonly HashSet<ParticipacaoEvento> _participacoes = new();
-        public IReadOnlyCollection<ParticipacaoEvento> Participacoes => _participacoes;
+        private readonly HashSet<ParticipanteEvento> _participacoes = new();
+        public IReadOnlyCollection<ParticipanteEvento> Participacoes => _participacoes;
         public IEnumerable<Usuario> MembrosEscalados => Participacoes.Where(p => p.Status == StatusParticipacaoEventoEnum.Escalado).Select(p => p.Usuario);
 
         protected EventoBase(
@@ -34,7 +34,7 @@ namespace Convoquei.Core.Eventos.Entidades
             string descricao,
             DateTime dataHora,
             Organizacao organizacao,
-            Membro membroCriador,
+            MembroOrganizacao membroCriador,
             int minutosAntesParaFechamentoAutomatico) : base(Guid.NewGuid())
         {
             membroCriador.ValidarPermissaoAdministrativa(organizacao);
@@ -62,14 +62,14 @@ namespace Convoquei.Core.Eventos.Entidades
 
         private void PopularParticipantesInicial()
         {
-            foreach (Membro membro in Organizacao.Membros)
+            foreach (MembroOrganizacao membro in Organizacao.Membros)
             {
-                ParticipacaoEvento participacao = new(membro.Usuario, membro.Cargo);
+                ParticipanteEvento participacao = new(membro.Usuario, this, membro.Cargo);
                 _participacoes.Add(participacao);
             }
         }
 
-        public void DeletarEvento(Membro membro, DateTime data, string motivo)
+        public void DeletarEvento(MembroOrganizacao membro, DateTime data, string motivo)
         {
             membro.ValidarPermissaoAdministrativa(Organizacao);
 
@@ -77,21 +77,21 @@ namespace Convoquei.Core.Eventos.Entidades
             Status = StatusEventoEnum.Deletado;
         }
 
-        public void AdicionarParticipante(Membro membro)
+        public void AdicionarParticipante(MembroOrganizacao membro)
         {
             if(membro.Organizacao.Id != Organizacao.Id)
                 throw new RegraDeNegocioExcecao($"O membro {membro} não pertence à organização do evento.");
             if (Participacoes.Any(p => p.Usuario.Id == membro.Usuario.Id))
                 throw new RegraDeNegocioExcecao($"O membro {membro} já está participando do evento.");
 
-            ParticipacaoEvento participacao = new(membro.Usuario, membro.Cargo);
+            ParticipanteEvento participacao = new(membro.Usuario, this, membro.Cargo);
 
             _participacoes.Add(participacao);
         }
 
-        public void RemoverParticipante(Membro membro)
+        public void RemoverParticipante(MembroOrganizacao membro)
         {
-            ParticipacaoEvento? participacao = Participacoes.FirstOrDefault(p => p.Usuario.Id == membro.Usuario.Id);
+            ParticipanteEvento? participacao = Participacoes.FirstOrDefault(p => p.Usuario.Id == membro.Usuario.Id);
             if (participacao is not null)
                 _participacoes.Remove(participacao);
         }
