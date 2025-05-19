@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Convoquei.Infra.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250519174628_Inicial")]
+    [Migration("20250519191931_Inicial")]
     partial class Inicial
     {
         /// <inheritdoc />
@@ -107,6 +107,10 @@ namespace Convoquei.Infra.Migrations
                         .HasColumnName("valor");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Tipo")
+                        .IsUnique()
+                        .HasDatabaseName("uk_planos_tipo");
 
                     b.ToTable("planos", (string)null);
                 });

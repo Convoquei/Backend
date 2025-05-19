@@ -1,4 +1,5 @@
 ﻿using Convoquei.Core.Assinaturas.Entidades;
+using Convoquei.Core.Organizacoes.Entidades;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -24,7 +25,7 @@ namespace Convoquei.Infra.Assinaturas.Mapeamentos
 
             builder.HasOne(a => a.Organizacao)
                 .WithOne(o => o.Assinatura)
-                .HasForeignKey<Assinatura>(a => a.Id)
+                .HasForeignKey<Organizacao>(a => a.Id)
                 .IsRequired();
 
             builder.HasOne(a => a.Plano)

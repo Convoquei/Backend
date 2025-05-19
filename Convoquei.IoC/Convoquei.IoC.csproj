@@ -13,6 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Convoquei.Application\Convoquei.Application.csproj" />
+    <ProjectReference Include="..\Convoquei.Core\Convoquei.Core.csproj" />
     <ProjectReference Include="..\Convoquei.Infra\Convoquei.Infra.csproj" />
   </ItemGroup>
 

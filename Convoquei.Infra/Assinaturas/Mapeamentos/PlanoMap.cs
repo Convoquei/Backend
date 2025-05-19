@@ -36,9 +36,13 @@ public class PlanoMap : IEntityTypeConfiguration<Plano>
             .HasConversion<string>()
             .IsRequired();
 
-        //builder.HasMany(p => p.Assinaturas)
-        //    .WithOne(a => a.Plano)
-        //    .HasForeignKey("plano_id")
-        //    .IsRequired();
+        builder.HasIndex(p => p.Tipo)
+            .HasDatabaseName("uk_planos_tipo")
+            .IsUnique();
+
+        builder.HasMany(p => p.Assinaturas)
+            .WithOne(a => a.Plano)
+            .HasForeignKey("plano_id")
+            .IsRequired();
     }
 }

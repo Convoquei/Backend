@@ -105,6 +105,10 @@ namespace Convoquei.Infra.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Tipo")
+                        .IsUnique()
+                        .HasDatabaseName("uk_planos_tipo");
+
                     b.ToTable("planos", (string)null);
                 });
 

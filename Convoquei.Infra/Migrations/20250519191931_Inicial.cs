@@ -316,6 +316,12 @@ namespace Convoquei.Infra.Migrations
                 name: "IX_participantes_evento_usuario_id",
                 table: "participantes_evento",
                 column: "usuario_id");
+
+            migrationBuilder.CreateIndex(
+                name: "uk_planos_tipo",
+                table: "planos",
+                column: "tipo",
+                unique: true);
         }
 
         /// <inheritdoc />
