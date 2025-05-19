@@ -19,6 +19,11 @@ namespace Convoquei.Core.Organizacoes.Entidades
             Convidador = convidador;
         }
 
+        private ConviteOrganizacao()
+        {
+            
+        }
+
         public override bool Equals(object? obj)
         {
             if (obj is not ConviteOrganizacao outro) return false;

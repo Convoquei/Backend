@@ -18,6 +18,11 @@ namespace Convoquei.Core.Organizacoes.Entidades
             Cargo = cargo;
         }
 
+        private MembroOrganizacao()
+        {
+            
+        }
+
         public void AlterarCargo(CargoOrganizacaoEnum cargo)
         {
             if(Cargo == CargoOrganizacaoEnum.Criador && cargo != CargoOrganizacaoEnum.Criador)

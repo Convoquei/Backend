@@ -9,14 +9,13 @@ namespace Convoquei.Core.Usuarios.Entidades
         public string Nome { get; private set; }
         public Email Email { get; private set; }
 
-        public HashSet<Organizacao> _organizacoes = new();
-        public IReadOnlyCollection<Organizacao> Organizacoes => _organizacoes;
-
         public Usuario(string nome, Email email)
         {
             Nome = nome;
             Email = email;
         }
+
+        private Usuario() { }
 
         public static implicit operator string(Usuario usuario)
         {

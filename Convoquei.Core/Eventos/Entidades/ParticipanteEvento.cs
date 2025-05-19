@@ -20,6 +20,11 @@ namespace Convoquei.Core.Eventos.Entidades
             StatusParticipacao = statusParticipacao;
         }
 
+        private ParticipanteEvento()
+        {
+            
+        }
+
         public void SetStatusParticipacao(MembroOrganizacao membroModificador, StatusParticipacaoEventoEnum novoStatus)
         {
             if (novoStatus == StatusParticipacaoEventoEnum.NaoInformado)

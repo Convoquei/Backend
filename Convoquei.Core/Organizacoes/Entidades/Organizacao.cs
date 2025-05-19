@@ -10,8 +10,8 @@ namespace Convoquei.Core.Organizacoes.Entidades
     public sealed class Organizacao : EntidadeBase
     {
         public string Nome { get; private set; }
-        public Assinatura Assinatura { get; private set; }
         public bool ExigirAprovacaoDisponibilidade { get; private set; }
+        public Assinatura Assinatura { get; private set; }
 
         private readonly HashSet<ConviteOrganizacao> _convites = new();
         public IReadOnlyCollection<ConviteOrganizacao> Convites => _convites;
@@ -27,6 +27,11 @@ namespace Convoquei.Core.Organizacoes.Entidades
             Nome = nome;
             Assinatura = Assinatura.CriarGratuita(this);
             ExigirAprovacaoDisponibilidade = false;
+        }
+
+        private Organizacao()
+        {
+            
         }
 
         public void AdicionarEvento(Evento evento)

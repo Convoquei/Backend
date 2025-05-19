@@ -19,6 +19,11 @@ namespace Convoquei.Core.Assinaturas.Entidades
             DataFim = dataFim;
         }
 
+        private Assinatura()
+        {
+            
+        }
+
         public static Assinatura CriarGratuita(Organizacao organizacao)
         {
             Plano plano = Plano.Gratuito();

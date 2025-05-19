@@ -48,6 +48,10 @@ namespace Convoquei.Core.Eventos.Entidades
             PopularParticipantesIniciais();
         }
 
+        private Evento()
+        {
+        }
+
         private void PopularParticipantesIniciais()
         {
             IEnumerable<ParticipanteEvento> participantes = Organizacao
@@ -59,11 +63,11 @@ namespace Convoquei.Core.Eventos.Entidades
 
         public void Cancelar(MembroOrganizacao membroCancelando, string motivo)
         {
-            if(!membroCancelando.PossuiPermissoesAdministrativas(Organizacao))
+            if (!membroCancelando.PossuiPermissoesAdministrativas(Organizacao))
                 throw new RegraDeNegocioExcecao("Somente administradores da organização podem cancelar eventos.");
             if (Status == StatusEventoEnum.Cancelado)
                 throw new RegraDeNegocioExcecao($"Esse evento já está cancelado! ({Cancelamento})");
-            if(DataHoraInicio < DateTime.Now)
+            if (DataHoraInicio < DateTime.Now)
                 throw new RegraDeNegocioExcecao("Eventos passados não podem ser cancelados.");
 
             Status = StatusEventoEnum.Cancelado;

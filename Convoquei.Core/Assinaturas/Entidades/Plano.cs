@@ -11,6 +11,9 @@ namespace Convoquei.Core.Assinaturas.Entidades
         public decimal Valor { get; private set; }
         public TipoPlanoEnum Tipo { get; private set; }
 
+        public HashSet<Assinatura> _assinaturas { get; private set; } = new();
+        public IReadOnlyCollection<Assinatura> Assinaturas => _assinaturas;
+
         public Plano(string nome, int limiteMembros, int limiteEventosMensais, decimal valor, TipoPlanoEnum tipo) : base()
         {
             Nome = nome;
@@ -18,6 +21,11 @@ namespace Convoquei.Core.Assinaturas.Entidades
             LimiteEventosMensais = limiteEventosMensais;
             Valor = valor;
             Tipo = tipo;
+        }
+
+        private Plano()
+        {
+            
         }
 
         public static Plano Gratuito()

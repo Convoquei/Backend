@@ -1,8 +1,9 @@
-﻿using Convoquei.Core.Usuarios.Entidades;
+﻿using Convoquei.Core.Genericos.Entidades;
+using Convoquei.Core.Usuarios.Entidades;
 
 namespace Convoquei.Core.Eventos.Entidades
 {
-    public sealed class ArquivoEvento
+    public sealed class ArquivoEvento : EntidadeBase
     {
         public Evento Evento { get; private set; }
         public string Nome { get; private set; }
@@ -19,6 +20,11 @@ namespace Convoquei.Core.Eventos.Entidades
             TamanhoEmBytes = tamanhoEmBytes;
             ChaveStorage = chaveStorage;
             Criador = criador;
+        }
+
+        private ArquivoEvento()
+        {
+            
         }
     }
 }
