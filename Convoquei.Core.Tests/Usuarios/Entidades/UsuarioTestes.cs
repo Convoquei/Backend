@@ -1,5 +1,5 @@
-﻿using Convoquei.Core.Genericos.ValueObjects;
-using Convoquei.Core.Usuarios.Entidades;
+﻿using Convoquei.Core.Usuarios.Entidades;
+using Convoquei.Core.Usuarios.ValueObjects;
 
 namespace Convoquei.Core.Tests.Usuarios.Entidades
 {
@@ -26,7 +26,7 @@ namespace Convoquei.Core.Tests.Usuarios.Entidades
 
                 // Assert
                 Assert.Equal(nomeEsperado, usuario.Nome);
-                Assert.Equal(emailEsperado, usuario.Email.Valor);
+                Assert.Equal(emailEsperado, usuario.Email.Endereco);
             }
         }
 

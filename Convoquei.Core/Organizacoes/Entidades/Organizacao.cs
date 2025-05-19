@@ -1,8 +1,8 @@
-﻿using Convoquei.Core.Eventos.Entidades;
-using Convoquei.Core.Eventos.Enumeradores;
+﻿using Convoquei.Core.Assinaturas.Entidades;
+using Convoquei.Core.Eventos.Entidades;
 using Convoquei.Core.Genericos.Entidades;
 using Convoquei.Core.Genericos.Excecoes;
-using Convoquei.Core.Organizacoes.Enumeradores.CargoMembroEnum;
+using Convoquei.Core.Organizacoes.Enumeradores;
 using Convoquei.Core.Usuarios.Entidades;
 
 namespace Convoquei.Core.Organizacoes.Entidades
@@ -10,80 +10,52 @@ namespace Convoquei.Core.Organizacoes.Entidades
     public sealed class Organizacao : EntidadeBase
     {
         public string Nome { get; private set; }
-        public Usuario Criador => Membros.FirstOrDefault(m => m.Cargo == CargoMembroEnum.Criador)!.Usuario;
+        public Assinatura Assinatura { get; private set; }
+        public bool ExigirAprovacaoDisponibilidade { get; private set; }
+
+        private readonly HashSet<ConviteOrganizacao> _convites = new();
+        public IReadOnlyCollection<ConviteOrganizacao> Convites => _convites;
 
         private readonly HashSet<MembroOrganizacao> _membros = new();
         public IReadOnlyCollection<MembroOrganizacao> Membros => _membros;
 
-        private readonly HashSet<EventoBase> _eventos = new();
-        public IReadOnlyCollection<EventoBase> Eventos => _eventos;
+        private IList<Evento> _eventos = new List<Evento>();
+        public IReadOnlyCollection<Evento> Eventos => _eventos.AsReadOnly();
 
-        public Organizacao(string nome, Usuario usuario) : base(Guid.NewGuid())
+        public Organizacao(string nome)
         {
             Nome = nome;
-            
-            MembroOrganizacao membroCriador = new(usuario, this, CargoMembroEnum.Criador);
-            _membros.Add(membroCriador);
+            Assinatura = Assinatura.CriarGratuita(this);
+            ExigirAprovacaoDisponibilidade = false;
         }
 
-        private Organizacao() { }
-
-        public void AdicionarMembro(Usuario usuario)
+        public void AdicionarEvento(Evento evento)
         {
-            MembroOrganizacao membro = new(usuario, this, CargoMembroEnum.Membro);
+            if (_eventos.Any(e => e.Id == evento.Id))
+                throw new RegraDeNegocioExcecao("Evento já cadastrado na organização.");
 
-            if (!_membros.Add(membro))
-                throw new RegraDeNegocioExcecao($"O membro {membro} já pertence à organização.");
-
-            usuario.AdicionarOrganizacao(this);
-            PopularPossivelParticipacaoEventosAtivos(membro);
+            _eventos.Add(evento);
         }
 
-        public void RemoverMembro(Usuario usuario)
+        public void ConvidarUsuario(MembroOrganizacao membro, string email)
         {
-            MembroOrganizacao? membro = _membros.FirstOrDefault(m => m.Usuario.Equals(usuario));
-            if (membro is null)
-                throw new RegraDeNegocioExcecao($"O membro {membro} não pertence à organização.");
+            if (!membro.PossuiPermissoesAdministrativas(this))
+                throw new RegraDeNegocioExcecao("É necessário possuir permissões administrativas na organização para convidar usuários.");
 
-            _membros.Remove(membro);
-            RemoverParticipacoesEventoAtivos(membro);
-            usuario.RemoverOrganizacao(this);
+            ConviteOrganizacao convite = new(email, this, DateTime.UtcNow.AddDays(7), membro.Usuario);
+            _convites.Add(convite);
         }
 
-        public void Deletar(Usuario usuario)
+        public void AceitarConvite(Usuario usuario, ConviteOrganizacao convite)
         {
-            if(!usuario.Equals(Criador))
-                throw new RegraDeNegocioExcecao("Apenas o criador da organização pode deletá-la.");
+            if(!usuario.Email.Equals(convite.Email))
+                throw new RegraDeNegocioExcecao("Convite não pertence ao usuário.");
+            if (convite.DataExpiracao < DateTime.UtcNow)
+                throw new RegraDeNegocioExcecao("Convite expirado.");
 
-            bool possuiEventosAtivos = Eventos.Any(e => e.Status == StatusEventoEnum.Ativo);
-
-            if (possuiEventosAtivos)
-                throw new RegraDeNegocioExcecao("A organização não pode ser deletada enquanto houver eventos ativos.");
+            MembroOrganizacao membro = new(usuario, this, CargoOrganizacaoEnum.Membro);
+            _membros.Add(membro);
+            _convites.Remove(convite);
         }
-
-        private void PopularPossivelParticipacaoEventosAtivos(MembroOrganizacao membro)
-        {
-            foreach (EventoBase evento in _eventos)
-            {
-                if (evento.Status != StatusEventoEnum.Ativo)
-                    continue;
-
-                evento.AdicionarParticipante(membro);
-            }
-        }
-
-        private void RemoverParticipacoesEventoAtivos(MembroOrganizacao membro)
-        {
-            foreach (EventoBase evento in _eventos)
-            {
-                if(evento.Status != StatusEventoEnum.Ativo)
-                    continue;
-
-                evento.RemoverParticipante(membro);
-            }
-        }
-
-        public static implicit operator string(Organizacao organizacao)
-            => organizacao.Nome;
     }
 }

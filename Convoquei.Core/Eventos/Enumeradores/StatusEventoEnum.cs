@@ -3,6 +3,6 @@
     public enum StatusEventoEnum
     {
         Ativo = 1,
-        Deletado = 2
+        Cancelado = 2
     }
 }

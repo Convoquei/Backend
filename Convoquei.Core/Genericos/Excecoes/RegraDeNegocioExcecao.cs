@@ -4,7 +4,7 @@
     {
         public RegraDeNegocioExcecao(string mensagem) : base(mensagem)
         {
-            
+
         }
     }
 }

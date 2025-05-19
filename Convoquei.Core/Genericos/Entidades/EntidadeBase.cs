@@ -4,20 +4,37 @@
     {
         public Guid Id { get; private set; }
         public DateTime DataCriacao { get; private set; }
-        public DateTime DataAtualizacao { get; protected set; }
+        public DateTime? DataAlteracao { get; private set; }
 
-        protected EntidadeBase(Guid id, DateTime? criadoEm = null)
+        public EntidadeBase()
         {
-            Id = id == Guid.Empty ? Guid.NewGuid() : id;
-            DataCriacao = criadoEm ?? DateTime.UtcNow;
-            DataAtualizacao = DataCriacao;
+            Id = Guid.NewGuid();
+            DataCriacao = DateTime.UtcNow;
+            DataAlteracao = null;
         }
 
-        protected EntidadeBase() { }
-
         public override bool Equals(object? obj)
-            => obj is EntidadeBase other && Id == other.Id;
+        {
+            if (obj is not EntidadeBase outra) return false;
+            if (ReferenceEquals(this, outra)) return true;
+            if (GetType() != outra.GetType()) return false;
 
-        public override int GetHashCode() => Id.GetHashCode();
+            return Id == outra.Id;
+        }
+
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode();
+        }
+
+        public static bool operator ==(EntidadeBase? a, EntidadeBase? b)
+        {
+            if (a is null && b is null) return true;
+            if (a is null || b is null) return false;
+
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(EntidadeBase? a, EntidadeBase? b) => !(a == b);
     }
 }

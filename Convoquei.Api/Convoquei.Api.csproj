@@ -16,6 +16,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Convoquei.Application\Convoquei.Application.csproj" />
     <ProjectReference Include="..\Convoquei.DataTransfer\Convoquei.DataTransfer.csproj" />
+    <ProjectReference Include="..\Convoquei.IoC\Convoquei.IoC.csproj" />
   </ItemGroup>
 
 </Project>

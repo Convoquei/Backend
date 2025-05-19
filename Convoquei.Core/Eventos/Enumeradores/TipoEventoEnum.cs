@@ -2,7 +2,8 @@
 {
     public enum TipoEventoEnum
     {
-        Unico = 1,
-        Recorrente = 2
+        DataUnica = 1,
+        SemanalRecorrente = 2,
+        Quinzenal = 3
     }
 }

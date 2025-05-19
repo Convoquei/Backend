@@ -1,7 +1,8 @@
 ﻿using Convoquei.Core.Eventos.Enumeradores;
 using Convoquei.Core.Genericos.Entidades;
 using Convoquei.Core.Genericos.Excecoes;
-using Convoquei.Core.Organizacoes.Enumeradores.CargoMembroEnum;
+using Convoquei.Core.Genericos.Extensoes;
+using Convoquei.Core.Organizacoes.Entidades;
 using Convoquei.Core.Usuarios.Entidades;
 
 namespace Convoquei.Core.Eventos.Entidades
@@ -9,88 +10,60 @@ namespace Convoquei.Core.Eventos.Entidades
     public sealed class ParticipanteEvento : EntidadeBase
     {
         public Usuario Usuario { get; private set; }
-        public EventoBase Evento { get; private set; }
-        public CargoMembroEnum CargoNaEpoca { get; private set; }
-        public StatusParticipacaoEventoEnum Status { get; private set; }
+        public Evento Evento { get; private set; }
+        public StatusParticipacaoEventoEnum StatusParticipacao { get; private set; }
 
-        public ParticipanteEvento(Usuario usuario, EventoBase evento, CargoMembroEnum cargoNaEpoca) : base(Guid.NewGuid())
+        public ParticipanteEvento(Usuario usuario, Evento evento, StatusParticipacaoEventoEnum statusParticipacao)
         {
             Usuario = usuario;
-            CargoNaEpoca = cargoNaEpoca;
             Evento = evento;
-            Status = StatusParticipacaoEventoEnum.NaoInformado;
+            StatusParticipacao = statusParticipacao;
         }
 
-        public void AlterarStatus(StatusParticipacaoEventoEnum novoStatus)
+        public void SetStatusParticipacao(MembroOrganizacao membroModificador, StatusParticipacaoEventoEnum novoStatus)
         {
-            switch (novoStatus)
-            {
-                case StatusParticipacaoEventoEnum.Disponivel:
-                    Disponibilizar();
-                    break;
-                case StatusParticipacaoEventoEnum.Indisponivel:
-                    Indisponibilizar();
-                    break;
-                case StatusParticipacaoEventoEnum.Escalado:
-                    Escalar();
-                    break;
-                case StatusParticipacaoEventoEnum.NaoEscalado:
-                    Desescalar();
-                    break;
-                case StatusParticipacaoEventoEnum.NaoInformado:
-                    throw new RegraDeNegocioExcecao("Não é possível alterar o status para Não Informado.");
-                default:
-                    return;
-            }
-        }
+            if (novoStatus == StatusParticipacaoEventoEnum.NaoInformado)
+                throw new RegraDeNegocioExcecao("O status da participação não pode ser definido como não informado.");
 
-        private void Escalar()
-        {
-            if (Status != StatusParticipacaoEventoEnum.Disponivel &&
-                Status != StatusParticipacaoEventoEnum.NaoEscalado)
+            bool proprioUsuarioModificando = membroModificador.Usuario.Equals(Usuario);
+
+            if (StatusParticipacao == StatusParticipacaoEventoEnum.NaoInformado && !proprioUsuarioModificando)
+                throw new RegraDeNegocioExcecao("Somente o próprio participante pode definir o status inicial da participação.");
+
+            if (EhStatusDoTipoAutoGerenciado(novoStatus) && !proprioUsuarioModificando)
+                throw new RegraDeNegocioExcecao($"Somente o próprio participante pode alterar o status para {novoStatus.GetDescription().ToLower()}.");
+
+            if (EhStatusDoTipoAdministrativo(novoStatus))
             {
-                throw new RegraDeNegocioExcecao("Escalação permitida somente quando disponível ou não escalado.");
+                if (!membroModificador.PossuiPermissoesAdministrativas(Evento.Organizacao))
+                    throw new RegraDeNegocioExcecao("Somente administradores da organização podem alterar esse status.");
+
+                if (!TransicaoEntreEscaladosValida(StatusParticipacao, novoStatus))
+                {
+                    throw new RegraDeNegocioExcecao(
+                        $"O status da participação só pode ser definido como '{novoStatus.GetDescription().ToLowerInvariant()}' se o participante estiver como 'Disponível', 'Escalado' ou 'Não Escalado'.");
+                }
             }
 
-            Status = StatusParticipacaoEventoEnum.Escalado;
+            StatusParticipacao = novoStatus;
         }
 
-        private void Desescalar()
+
+        private static bool EhStatusDoTipoAutoGerenciado(StatusParticipacaoEventoEnum status) =>
+            status is StatusParticipacaoEventoEnum.Disponivel or StatusParticipacaoEventoEnum.Indisponivel;
+
+        private static bool EhStatusDoTipoAdministrativo(StatusParticipacaoEventoEnum status) =>
+            status is StatusParticipacaoEventoEnum.Escalado or StatusParticipacaoEventoEnum.NaoEscalado;
+
+        private static bool TransicaoEntreEscaladosValida(StatusParticipacaoEventoEnum atual, StatusParticipacaoEventoEnum novo)
         {
-            if (Status != StatusParticipacaoEventoEnum.Escalado &&
-                Status != StatusParticipacaoEventoEnum.Disponivel)
-            {
-                throw new RegraDeNegocioExcecao("Desescalação permitida somente quando escalado ou disponível.");
-            }
+            if ((atual, novo) is
+                (StatusParticipacaoEventoEnum.Escalado, StatusParticipacaoEventoEnum.NaoEscalado) or
+                (StatusParticipacaoEventoEnum.NaoEscalado, StatusParticipacaoEventoEnum.Escalado))
+                return true;
 
-            Status = StatusParticipacaoEventoEnum.NaoEscalado;
+            return atual == StatusParticipacaoEventoEnum.Disponivel;
         }
 
-        private void Disponibilizar()
-        {
-            if (Evento.StatusEscala != StatusEscalaEventoEnum.Aberta)
-                throw new RegraDeNegocioExcecao("O evento está fechado para disponibilidades.");
-
-            if (Status != StatusParticipacaoEventoEnum.NaoInformado &&
-                Status != StatusParticipacaoEventoEnum.Indisponivel)
-            {
-                throw new RegraDeNegocioExcecao("Disponibilidade permitida somente quando não informado ou indisponível.");
-            }
-
-            Status = StatusParticipacaoEventoEnum.Disponivel;
-        }
-
-        private void Indisponibilizar()
-        {
-            if (Evento.StatusEscala != StatusEscalaEventoEnum.Aberta)
-                throw new RegraDeNegocioExcecao("O evento está fechado para disponibilidades.");
-
-            if (Status != StatusParticipacaoEventoEnum.Disponivel &&
-                Status != StatusParticipacaoEventoEnum.NaoInformado)
-            {
-                throw new RegraDeNegocioExcecao("Indisponibilidade permitida somente quando disponível ou não informado.");
-            }
-            Status = StatusParticipacaoEventoEnum.Indisponivel;
-        }
     }
 }
