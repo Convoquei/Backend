@@ -42,11 +42,19 @@ namespace Convoquei.Api.Controllers.Organizacoes
             return Ok();
         }
 
+        /// <summary>
+        /// Recuperar uma organização
+        /// </summary>
+        /// <param name="id">ID da organização</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         [HttpGet]
         [Route("{id}")]
         public async Task<IActionResult> ObterPorId(Guid id, CancellationToken cancellationToken)
         {
-            return Ok();
+            OrganizacaoResponse response = await _organizacoesAppServico.RecuperarAsync(id, cancellationToken);
+
+            return Ok(response);
         }
     }
 }

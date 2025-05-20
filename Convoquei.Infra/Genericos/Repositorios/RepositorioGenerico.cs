@@ -49,5 +49,10 @@ namespace Convoquei.Infra.Genericos.Repositorios
             _dbSet.Remove(entidade);
             return Task.FromResult(true);
         }
+
+        public IQueryable<TEntidade> Query()
+        {
+            return _dbSet.AsQueryable();
+        }
     }
 }

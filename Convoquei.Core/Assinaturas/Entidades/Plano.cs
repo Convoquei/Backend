@@ -3,7 +3,7 @@ using Convoquei.Core.Genericos.Entidades;
 
 namespace Convoquei.Core.Assinaturas.Entidades
 {
-    public sealed class Plano : EntidadeBase
+    public class Plano : EntidadeBase
     {
         public string Nome { get; private set; }
         public int LimiteMembros { get; private set; }
@@ -11,8 +11,7 @@ namespace Convoquei.Core.Assinaturas.Entidades
         public decimal Valor { get; private set; }
         public TipoPlanoEnum Tipo { get; private set; }
 
-        public HashSet<Assinatura> _assinaturas { get; private set; } = new();
-        public IReadOnlyCollection<Assinatura> Assinaturas => _assinaturas;
+        public virtual HashSet<Assinatura> Assinaturas { get; private set; }
 
         public Plano(string nome, int limiteMembros, int limiteEventosMensais, decimal valor, TipoPlanoEnum tipo) : base()
         {
@@ -23,7 +22,7 @@ namespace Convoquei.Core.Assinaturas.Entidades
             Tipo = tipo;
         }
 
-        private Plano()
+        protected Plano()
         {
             
         }

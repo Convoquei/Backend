@@ -7,10 +7,10 @@ using Convoquei.Core.Usuarios.Entidades;
 
 namespace Convoquei.Core.Eventos.Entidades
 {
-    public sealed class ParticipanteEvento : EntidadeBase
+    public class ParticipanteEvento : EntidadeBase
     {
-        public Usuario Usuario { get; private set; }
-        public Evento Evento { get; private set; }
+        public virtual Usuario Usuario { get; private set; }
+        public virtual Evento Evento { get; private set; }
         public StatusParticipacaoEventoEnum StatusParticipacao { get; private set; }
 
         public ParticipanteEvento(Usuario usuario, Evento evento, StatusParticipacaoEventoEnum statusParticipacao)
@@ -20,7 +20,7 @@ namespace Convoquei.Core.Eventos.Entidades
             StatusParticipacao = statusParticipacao;
         }
 
-        private ParticipanteEvento()
+        protected ParticipanteEvento()
         {
             
         }

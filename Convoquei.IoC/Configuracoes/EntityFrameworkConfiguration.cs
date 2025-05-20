@@ -13,6 +13,8 @@ namespace Convoquei.IoC.Configuracoes
             {
                 var connectionString = configuration.GetConnectionString("DefaultConnection");
 
+                options.UseLazyLoadingProxies();
+
                 options.UseNpgsql(connectionString, npgsqlOptions =>
                 {
                     npgsqlOptions.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName);

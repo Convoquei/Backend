@@ -6,5 +6,6 @@ namespace Convoquei.Application.Organizacoes.Servicos.Interfaces
     public interface IOrganizacoesAppServico
     {
         Task<OrganizacaoResponse> CriarAsync(CriarOrganizacaoRequest request, CancellationToken cancellationToken);
+        Task<OrganizacaoResponse> RecuperarAsync(Guid id, CancellationToken cancellationToken);
     }
 }

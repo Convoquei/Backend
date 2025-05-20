@@ -11,5 +11,6 @@ namespace Convoquei.Core.Genericos.Repositorios
         Task<T> InserirAsync(T entidade, CancellationToken cancellationToken);
         Task<T> EditarAsync(T entidade, CancellationToken cancellationToken);
         Task<bool> RemoverAsync(T entidade, CancellationToken cancellationToken);
+        IQueryable<T> Query();
     }
 }

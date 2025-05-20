@@ -3,14 +3,14 @@ using Convoquei.Core.Usuarios.Entidades;
 
 namespace Convoquei.Core.Eventos.Entidades
 {
-    public sealed class ArquivoEvento : EntidadeBase
+    public class ArquivoEvento : EntidadeBase
     {
-        public Evento Evento { get; private set; }
+        public virtual Evento Evento { get; private set; }
         public string Nome { get; private set; }
         public string MimeType { get; private set; }
         public long TamanhoEmBytes { get; private set; }
         public string ChaveStorage { get; private set; }
-        public Usuario Criador { get; private set; }
+        public virtual Usuario Criador { get; private set; }
 
         public ArquivoEvento(Evento evento, string nome, string mimeType, long tamanhoEmBytes, string chaveStorage, Usuario criador)
         {
@@ -22,7 +22,7 @@ namespace Convoquei.Core.Eventos.Entidades
             Criador = criador;
         }
 
-        private ArquivoEvento()
+        protected ArquivoEvento()
         {
             
         }

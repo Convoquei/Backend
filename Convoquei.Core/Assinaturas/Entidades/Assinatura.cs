@@ -3,10 +3,10 @@ using Convoquei.Core.Organizacoes.Entidades;
 
 namespace Convoquei.Core.Assinaturas.Entidades
 {
-    public sealed class Assinatura : EntidadeBase
+    public class Assinatura : EntidadeBase
     {
-        public Plano Plano { get; private set; }
-        public Organizacao Organizacao { get; private set; }
+        public virtual Plano Plano { get; private set; }
+        public virtual Organizacao Organizacao { get; private set; }
         public DateTime DataInicio { get; private set; }
         public DateTime? DataFim { get; private set; }
         public bool Ativa => DataFim == null || DataFim > DateTime.UtcNow;
@@ -19,7 +19,7 @@ namespace Convoquei.Core.Assinaturas.Entidades
             DataFim = dataFim;
         }
 
-        private Assinatura()
+        protected Assinatura()
         {
             
         }

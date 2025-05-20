@@ -7,20 +7,14 @@ using Convoquei.Core.Usuarios.Entidades;
 
 namespace Convoquei.Core.Organizacoes.Entidades
 {
-    public sealed class Organizacao : EntidadeBase
+    public  class Organizacao : EntidadeBase
     {
         public string Nome { get; private set; }
         public bool ExigirAprovacaoDisponibilidade { get; private set; }
-        public Assinatura Assinatura { get; private set; }
-
-        private readonly HashSet<ConviteOrganizacao> _convites = new();
-        public IReadOnlyCollection<ConviteOrganizacao> Convites => _convites;
-
-        private readonly HashSet<MembroOrganizacao> _membros = new();
-        public IReadOnlyCollection<MembroOrganizacao> Membros => _membros;
-
-        private IList<Evento> _eventos = new List<Evento>();
-        public IReadOnlyCollection<Evento> Eventos => _eventos.AsReadOnly();
+        public virtual Assinatura Assinatura { get; private set; }
+        public virtual HashSet<ConviteOrganizacao> Convites { get; private set; }
+        public virtual HashSet<MembroOrganizacao> Membros { get; private set; }
+        public virtual IList<Evento> Eventos { get; private set; }
 
         public MembroOrganizacao Lider => Membros.First(m => m.Cargo == CargoOrganizacaoEnum.Criador);
 
@@ -31,20 +25,20 @@ namespace Convoquei.Core.Organizacoes.Entidades
             ExigirAprovacaoDisponibilidade = false;
 
             MembroOrganizacao membroCriador = new(usuarioCriador, this, CargoOrganizacaoEnum.Criador);
-            _membros.Add(membroCriador);
+            Membros.Add(membroCriador);
         }
 
-        private Organizacao()
+        protected Organizacao()
         {
             
         }
 
         public void AdicionarEvento(Evento evento)
         {
-            if (_eventos.Any(e => e.Id == evento.Id))
+            if (Eventos.Any(e => e.Id == evento.Id))
                 throw new RegraDeNegocioExcecao("Evento já cadastrado na organização.");
 
-            _eventos.Add(evento);
+            Eventos.Add(evento);
         }
 
         public void ConvidarUsuario(MembroOrganizacao membro, string email)
@@ -53,7 +47,7 @@ namespace Convoquei.Core.Organizacoes.Entidades
                 throw new RegraDeNegocioExcecao("É necessário possuir permissões administrativas na organização para convidar usuários.");
 
             ConviteOrganizacao convite = new(email, this, DateTime.UtcNow.AddDays(7), membro.Usuario);
-            _convites.Add(convite);
+            Convites.Add(convite);
         }
 
         public void AceitarConvite(Usuario usuario, ConviteOrganizacao convite)
@@ -64,8 +58,8 @@ namespace Convoquei.Core.Organizacoes.Entidades
                 throw new RegraDeNegocioExcecao("Convite expirado.");
 
             MembroOrganizacao membro = new(usuario, this, CargoOrganizacaoEnum.Membro);
-            _membros.Add(membro);
-            _convites.Remove(convite);
+            Membros.Add(membro);
+            Convites.Remove(convite);
         }
     }
 }

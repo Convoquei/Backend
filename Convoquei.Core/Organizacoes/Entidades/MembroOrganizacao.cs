@@ -5,10 +5,10 @@ using Convoquei.Core.Usuarios.Entidades;
 
 namespace Convoquei.Core.Organizacoes.Entidades
 {
-    public sealed class MembroOrganizacao : EntidadeBase
+    public class MembroOrganizacao : EntidadeBase
     {
-        public Usuario Usuario { get; private set; }
-        public Organizacao Organizacao { get; private set; }
+        public virtual Usuario Usuario { get; private set; }
+        public virtual Organizacao Organizacao { get; private set; }
         public CargoOrganizacaoEnum Cargo { get; private set; }
 
         public MembroOrganizacao(Usuario usuario, Organizacao organizacao, CargoOrganizacaoEnum cargo)
@@ -18,7 +18,7 @@ namespace Convoquei.Core.Organizacoes.Entidades
             Cargo = cargo;
         }
 
-        private MembroOrganizacao()
+        protected MembroOrganizacao()
         {
             
         }

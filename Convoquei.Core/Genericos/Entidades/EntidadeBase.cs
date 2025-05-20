@@ -5,7 +5,6 @@
         public Guid Id { get; private set; }
         public DateTime DataCriacao { get; private set; }
         public DateTime? DataAlteracao { get; private set; }
-        //Lista de eventos (Efeitos colaterais)
 
         public EntidadeBase()
         {

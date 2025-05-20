@@ -18,7 +18,7 @@ namespace Convoquei.Core.Usuarios.Entidades
             Token = null;
         }
 
-        private Usuario() { }
+        protected Usuario() { }
 
         public void SetToken(Token token)
         {

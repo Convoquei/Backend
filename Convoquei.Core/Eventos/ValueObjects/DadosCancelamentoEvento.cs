@@ -6,7 +6,7 @@ namespace Convoquei.Core.Eventos.ValueObjects
     {
         public DateTime Data { get; init; }
         public string Motivo { get; init; }
-        public Usuario Usuario { get; init; }
+        public virtual Usuario Usuario { get; init; }
 
         public DadosCancelamentoEvento(DateTime data, string motivo, Usuario usuario)
         {

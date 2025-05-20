@@ -48,5 +48,19 @@ namespace Convoquei.Application.Organizacoes.Servicos
                 throw;
             }
         }
+
+        public async Task<OrganizacaoResponse> RecuperarAsync(Guid id, CancellationToken cancellationToken)
+        {
+            try
+            {
+                Organizacao? organizacao = await _organizacoesRepositorio.RecuperarAsync(id, cancellationToken);
+
+                return (OrganizacaoResponse)organizacao;
+            }
+            catch(Exception ex)
+            {
+                throw;
+            }
+        }
     }
 }

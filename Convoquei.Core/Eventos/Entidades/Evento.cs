@@ -8,7 +8,7 @@ using Convoquei.Core.Usuarios.Entidades;
 
 namespace Convoquei.Core.Eventos.Entidades
 {
-    public sealed class Evento : EntidadeBase
+    public class Evento : EntidadeBase
     {
         public string Nome { get; private set; }
         public string Local { get; private set; }
@@ -16,16 +16,12 @@ namespace Convoquei.Core.Eventos.Entidades
         public TipoEventoEnum Tipo { get; private set; }
         public DateTime DataHoraInicio { get; private set; }
         public TimeSpan FechamentoEscalaAntecedencia { get; private set; }
-        public Usuario Criador { get; private set; }
-        public Organizacao Organizacao { get; private set; }
+        public virtual Usuario Criador { get; private set; }
+        public virtual Organizacao Organizacao { get; private set; }
         public StatusEventoEnum Status { get; private set; }
-        public DadosCancelamentoEvento? Cancelamento { get; private set; }
-
-        private readonly HashSet<ArquivoEvento> _arquivos = new();
-        public IReadOnlyCollection<ArquivoEvento> Arquivos => _arquivos;
-
-        private readonly HashSet<ParticipanteEvento> _participantes = new();
-        public IReadOnlyCollection<ParticipanteEvento> Participantes => _participantes;
+        public virtual DadosCancelamentoEvento? Cancelamento { get; private set; }
+        public virtual HashSet<ArquivoEvento> Arquivos { get; private set; }
+        public virtual HashSet<ParticipanteEvento> Participantes { get; private set; }
 
         public bool Cancelado => Status == StatusEventoEnum.Cancelado;
 
@@ -48,7 +44,7 @@ namespace Convoquei.Core.Eventos.Entidades
             PopularParticipantesIniciais();
         }
 
-        private Evento()
+        protected Evento()
         {
         }
 
@@ -58,7 +54,7 @@ namespace Convoquei.Core.Eventos.Entidades
                 .Membros
                 .Select(membro => new ParticipanteEvento(membro.Usuario, this, StatusParticipacaoEventoEnum.NaoInformado));
 
-            _participantes.AddRange(participantes);
+            Participantes.AddRange(participantes);
         }
 
         public void Cancelar(MembroOrganizacao membroCancelando, string motivo)
