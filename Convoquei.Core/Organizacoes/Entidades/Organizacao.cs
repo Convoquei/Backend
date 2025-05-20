@@ -22,11 +22,16 @@ namespace Convoquei.Core.Organizacoes.Entidades
         private IList<Evento> _eventos = new List<Evento>();
         public IReadOnlyCollection<Evento> Eventos => _eventos.AsReadOnly();
 
-        public Organizacao(string nome)
+        public MembroOrganizacao Lider => Membros.First(m => m.Cargo == CargoOrganizacaoEnum.Criador);
+
+        public Organizacao(string nome, Plano planoInicial, Usuario usuarioCriador)
         {
             Nome = nome;
-            Assinatura = Assinatura.CriarGratuita(this);
+            Assinatura = new(planoInicial, this, DateTime.UtcNow, null);
             ExigirAprovacaoDisponibilidade = false;
+
+            MembroOrganizacao membroCriador = new(usuarioCriador, this, CargoOrganizacaoEnum.Criador);
+            _membros.Add(membroCriador);
         }
 
         private Organizacao()

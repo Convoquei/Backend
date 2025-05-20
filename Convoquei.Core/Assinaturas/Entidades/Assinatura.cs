@@ -23,12 +23,5 @@ namespace Convoquei.Core.Assinaturas.Entidades
         {
             
         }
-
-        public static Assinatura CriarGratuita(Organizacao organizacao)
-        {
-            Plano plano = Plano.Gratuito();
-            Assinatura assinatura = new(plano, organizacao, DateTime.UtcNow, null);
-            return assinatura;
-        }
     }
 }

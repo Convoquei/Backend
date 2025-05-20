@@ -20,12 +20,31 @@ namespace Convoquei.Infra.Usuarios.Mapeamentos
                 .IsRequired()
                 .HasMaxLength(100);
 
+            builder.Property(u => u.Senha)
+                .HasColumnName("senha")
+                .IsRequired()
+                .HasMaxLength(100);
+
             builder.OwnsOne(u => u.Email, email =>
             {
                 email.Property(e => e.Endereco)
                     .HasColumnName("email")
                     .IsRequired()
                     .HasMaxLength(150);
+
+                email.HasIndex(e => e.Endereco)
+                    .IsUnique();
+            });
+
+            builder.OwnsOne(u => u.Token, token =>
+            {
+                token.Property(t => t.Acesso)
+                    .HasColumnName("token_acesso")
+                    .IsRequired();
+
+                token.Property(t => t.Refresh)
+                    .HasColumnName("token_refresh")
+                    .IsRequired();
             });
         }
     }

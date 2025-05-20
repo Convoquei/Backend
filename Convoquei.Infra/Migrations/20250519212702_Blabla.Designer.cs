@@ -3,6 +3,7 @@ using System;
 using Convoquei.Infra.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Convoquei.Infra.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250519212702_Blabla")]
+    partial class Blabla
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -620,33 +623,8 @@ namespace Convoquei.Infra.Migrations
                                 .HasForeignKey("UsuarioId");
                         });
 
-                    b.OwnsOne("Convoquei.Core.Usuarios.ValueObjects.Token", "Token", b1 =>
-                        {
-                            b1.Property<Guid>("UsuarioId")
-                                .HasColumnType("uuid");
-
-                            b1.Property<string>("Acesso")
-                                .IsRequired()
-                                .HasColumnType("text")
-                                .HasColumnName("token_acesso");
-
-                            b1.Property<string>("Refresh")
-                                .IsRequired()
-                                .HasColumnType("text")
-                                .HasColumnName("token_refresh");
-
-                            b1.HasKey("UsuarioId");
-
-                            b1.ToTable("usuarios");
-
-                            b1.WithOwner()
-                                .HasForeignKey("UsuarioId");
-                        });
-
                     b.Navigation("Email")
                         .IsRequired();
-
-                    b.Navigation("Token");
                 });
 
             modelBuilder.Entity("Convoquei.Core.Assinaturas.Entidades.Plano", b =>

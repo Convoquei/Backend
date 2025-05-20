@@ -1,9 +1,9 @@
 ﻿using Convoquei.Application.Organizacoes.Servicos;
 using Convoquei.Core.Genericos.UoW;
+using Convoquei.Core.Usuarios.Servicos;
 using Convoquei.Infra.Genericos.UoW;
 using Convoquei.Infra.Usuarios.Repositorios;
 using Microsoft.Extensions.DependencyInjection;
-using System.Reflection;
 
 namespace Convoquei.IoC.Configuracoes
 {
@@ -24,6 +24,14 @@ namespace Convoquei.IoC.Configuracoes
             //Infra
             services.Scan(scan => scan
                 .FromAssemblyOf<UsuariosRepositorio>()
+                .AddClasses()
+                .AsMatchingInterface()
+                .WithScopedLifetime()
+            );
+
+            //Dominio
+            services.Scan(scan => scan
+                .FromAssemblyOf<CriarUsuarioServico>()
                 .AddClasses()
                 .AsMatchingInterface()
                 .WithScopedLifetime()

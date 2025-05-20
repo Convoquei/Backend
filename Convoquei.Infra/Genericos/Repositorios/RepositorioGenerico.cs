@@ -22,6 +22,11 @@ namespace Convoquei.Infra.Genericos.Repositorios
             return await _dbSet.FirstOrDefaultAsync(e => e.Id == id, cancellationToken);
         }
 
+        public async Task<TEntidade?> RecuperarAsync(Expression<Func<TEntidade, bool>> expressao, CancellationToken cancellationToken)
+        {
+            return await _dbSet.FirstOrDefaultAsync(expressao, cancellationToken);
+        }
+
         public async Task<IEnumerable<TEntidade>> ListarAsync(Expression<Func<TEntidade, bool>> expressao, CancellationToken cancellationToken)
         {
             return await _dbSet.Where(expressao).ToListAsync(cancellationToken);

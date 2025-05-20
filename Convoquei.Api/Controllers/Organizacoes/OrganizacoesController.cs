@@ -1,12 +1,14 @@
 ﻿using Convoquei.Application.Organizacoes.Servicos.Interfaces;
 using Convoquei.DataTransfer.Organizacoes.Requests;
 using Convoquei.DataTransfer.Organizacoes.Responses;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Convoquei.Api.Controllers.Organizacoes
 {
-    [Route("api/[controller]")]
+    [Route("api/organizacoes")]
     [ApiController]
+    [Authorize]
     public class OrganizacoesController : ControllerBase
     {
         private readonly IOrganizacoesAppServico _organizacoesAppServico;

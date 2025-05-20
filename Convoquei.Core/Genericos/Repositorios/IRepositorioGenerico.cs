@@ -6,6 +6,7 @@ namespace Convoquei.Core.Genericos.Repositorios
     public interface IRepositorioGenerico<T> where T : EntidadeBase
     {
         Task<T?> RecuperarAsync(Guid id, CancellationToken cancellationToken);
+        Task<T?> RecuperarAsync(Expression<Func<T, bool>> expressao, CancellationToken cancellationToken);
         Task<IEnumerable<T>> ListarAsync(Expression<Func<T, bool>> expressao, CancellationToken cancellationToken);
         Task<T> InserirAsync(T entidade, CancellationToken cancellationToken);
         Task<T> EditarAsync(T entidade, CancellationToken cancellationToken);
