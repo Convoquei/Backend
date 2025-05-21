@@ -2,6 +2,7 @@
 using Convoquei.Core.Genericos.Entidades;
 using Convoquei.Core.Genericos.Repositorios;
 using Convoquei.Core.Genericos.Repositorios.Consultas;
+using Convoquei.Infra.Genericos.Extensoes;
 using Microsoft.EntityFrameworkCore;
 
 namespace Convoquei.Infra.Genericos.Repositorios
@@ -71,6 +72,19 @@ namespace Convoquei.Infra.Genericos.Repositorios
                 .ToListAsync(cancellationToken);
 
             return new PaginacaoConsulta<TEntidade>(registros, totalRegistros, pagina, tamanhoPagina);
+        }
+
+        public async Task<PaginacaoConsulta<TDataTransfer>> ListarAsync<TDataTransfer>(IQueryable<TEntidade> query, Expression<Func<TEntidade, TDataTransfer>> expression, int pagina, int tamanho, CancellationToken cancellationToken)
+        {
+            int total = await query.CountAsync(cancellationToken);
+
+            IEnumerable<TDataTransfer> dados = await query
+                .Select(expression)
+                .Skip((pagina - 1) * tamanho)
+                .Take(tamanho)
+                .ToListAsync(cancellationToken);
+
+            return new PaginacaoConsulta<TDataTransfer>(dados, total, pagina, tamanho);
         }
     }
 }

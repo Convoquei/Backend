@@ -1,5 +1,6 @@
 ﻿using Convoquei.Application.Autenticacao;
 using Convoquei.Application.Genericos;
+using Convoquei.Application.Genericos.Extensoes;
 using Convoquei.Application.Organizacoes.Servicos.Interfaces;
 using Convoquei.Core.Genericos.Excecoes;
 using Convoquei.Core.Genericos.Repositorios.Consultas;
@@ -49,7 +50,7 @@ namespace Convoquei.Application.Organizacoes.Servicos
             }
             catch(Exception ex)
             {
-                _logger.LogError(ex, "Erro ao processar {operacao}. Detalhes: {Mensagem}", "CriarOrganizacao", ex.Message);
+                _logger.LogError(ex, "CriarAsync", request);
                 await _unitOfWork.RollbackAsync();
                 throw;
             }
@@ -61,13 +62,19 @@ namespace Convoquei.Application.Organizacoes.Servicos
             {
                 Usuario usuario = _usuarioSessao.Usuario;
 
-                PaginacaoConsulta<Organizacao> organizacoes = await _organizacoesRepositorio.ListarOrganizacoesUsuarioAsync(usuario, request.Pagina, request.TamanhoPagina, cancellationToken);
-                
-                return organizacoes.MapearPaginacaoResponse<Organizacao, OrganizacaoResponse>();
+                IQueryable<Organizacao> query = _organizacoesRepositorio
+                    .Query()
+                    .Include(o => o.Assinatura)
+                        .ThenInclude(a => a.Plano)
+                    .Include(o => o.Membros);
+
+                PaginacaoConsulta<OrganizacaoResponse> teste = await _organizacoesRepositorio.ListarAsync(query, org => (OrganizacaoResponse)org, request.Pagina, request.TamanhoPagina, cancellationToken);
+
+                return (PaginacaoResponse<OrganizacaoResponse>)teste;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Erro ao processar {operacao}. Detalhes: {Mensagem}", "ListarOrganização", ex.Message);
+                _logger.LogError(ex, "ListarAsync", request);
                 throw;
             }
         }
@@ -86,7 +93,7 @@ namespace Convoquei.Application.Organizacoes.Servicos
             }
             catch(Exception ex)
             {
-                _logger.LogError(ex, "Erro ao processar {operacao}. Detalhes: {Mensagem}", "RecuperarOrganização", ex.Message);
+                _logger.LogError(ex, "RecuperarAsync", id);
                 throw;
             }
         }

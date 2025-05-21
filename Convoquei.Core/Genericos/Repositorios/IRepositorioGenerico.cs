@@ -15,5 +15,6 @@ namespace Convoquei.Core.Genericos.Repositorios
         IQueryable<T> Query();
         IQueryable<T> QueryAsNoTracking();
         Task<PaginacaoConsulta<T>> ListarAsync(IQueryable<T> query, int pagina, int tamanhoPagina, CancellationToken cancellationToken);
+        Task<PaginacaoConsulta<TDataTransfer>> ListarAsync<TDataTransfer>(IQueryable<T> query, Expression<Func<T, TDataTransfer>> expression, int pagina, int tamanho, CancellationToken cancellationToken);
     }
 }
