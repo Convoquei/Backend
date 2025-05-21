@@ -66,7 +66,8 @@ namespace Convoquei.Application.Organizacoes.Servicos
                     .Query()
                     .Include(o => o.Assinatura)
                         .ThenInclude(a => a.Plano)
-                    .Include(o => o.Membros);
+                    .Include(o => o.Membros)
+                        .ThenInclude(m => m.Usuario);
 
                 PaginacaoConsulta<OrganizacaoResponse> teste = await _organizacoesRepositorio.ListarAsync(query, org => (OrganizacaoResponse)org, request.Pagina, request.TamanhoPagina, cancellationToken);
 
