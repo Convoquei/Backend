@@ -6,7 +6,7 @@ namespace Convoquei.Application.Eventos.Servicos.Interfaces
 {
     public interface IEventosAppServico
     {
-        Task<EventoResponse> CriarAsync(CriarEventoRequest request, CancellationToken cancellationToken);
+        Task<EventoResponse> CriarAsync(Guid idOrganizacao, CriarEventoRequest request, CancellationToken cancellationToken);
         Task<PaginacaoResponse<EventoResponse>> ListarAsync(ListarEventosRequest request, CancellationToken cancellationToken);
         Task<EventoResponse?> RecuperarAsync(Guid id, CancellationToken cancellationToken);
     }

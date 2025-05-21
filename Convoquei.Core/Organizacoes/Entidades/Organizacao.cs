@@ -37,8 +37,9 @@ namespace Convoquei.Core.Organizacoes.Entidades
             
         }
 
-        public void AdicionarEvento(Evento evento)
+        public void AdicionarEvento(MembroOrganizacao membroCriador, Evento evento)
         {
+            membroCriador.ValidarPermissoesAdministrativas();
             if (Eventos.Any(e => e.Id == evento.Id))
                 throw new RegraDeNegocioExcecao("Evento já cadastrado na organização.");
             if(Assinatura.Plano.LimiteEventosMensais >= ContarEventosCriadosMesCorrente())
