@@ -13,5 +13,6 @@ namespace Convoquei.Core.Eventos.Contratos
         TimeSpan FechamentoEscalaAntecedencia { get; }
         Usuario Criador { get; }
         Organizacao Organizacao { get; }
+        TipoEventoEnum Tipo { get; }
     }
 }
