@@ -1,5 +1,6 @@
 ﻿using Convoquei.Core.Genericos.Entidades;
 using System.Linq.Expressions;
+using Convoquei.Core.Genericos.Repositorios.Consultas;
 
 namespace Convoquei.Core.Genericos.Repositorios
 {
@@ -12,5 +13,7 @@ namespace Convoquei.Core.Genericos.Repositorios
         Task<T> EditarAsync(T entidade, CancellationToken cancellationToken);
         Task<bool> RemoverAsync(T entidade, CancellationToken cancellationToken);
         IQueryable<T> Query();
+        IQueryable<T> QueryAsNoTracking();
+        Task<PaginacaoConsulta<T>> ListarAsync(IQueryable<T> query, int pagina, int tamanhoPagina, CancellationToken cancellationToken);
     }
 }

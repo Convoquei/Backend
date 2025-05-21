@@ -12,9 +12,9 @@ namespace Convoquei.Core.Organizacoes.Entidades
         public string Nome { get; private set; }
         public bool ExigirAprovacaoDisponibilidade { get; private set; }
         public virtual Assinatura Assinatura { get; private set; }
-        public virtual HashSet<ConviteOrganizacao> Convites { get; private set; }
-        public virtual HashSet<MembroOrganizacao> Membros { get; private set; }
-        public virtual IList<Evento> Eventos { get; private set; }
+        public virtual HashSet<ConviteOrganizacao> Convites { get; private set; } = new();
+        public virtual HashSet<MembroOrganizacao> Membros { get; private set; } = new();
+        public virtual IList<Evento> Eventos { get; private set; } = new List<Evento>();
 
         public MembroOrganizacao Lider => Membros.First(m => m.Cargo == CargoOrganizacaoEnum.Criador);
 

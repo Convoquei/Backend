@@ -1,11 +1,15 @@
 ﻿using Convoquei.Application.Autenticacao;
+using Convoquei.Application.Genericos;
 using Convoquei.Application.Organizacoes.Servicos.Interfaces;
+using Convoquei.Core.Genericos.Repositorios.Consultas;
 using Convoquei.Core.Genericos.UoW;
 using Convoquei.Core.Organizacoes.Entidades;
 using Convoquei.Core.Organizacoes.Repositorios;
 using Convoquei.Core.Organizacoes.Servicos.Interfaces;
+using Convoquei.DataTransfer.Genericos;
 using Convoquei.DataTransfer.Organizacoes.Requests;
 using Convoquei.DataTransfer.Organizacoes.Responses;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Convoquei.Application.Organizacoes.Servicos
@@ -49,6 +53,22 @@ namespace Convoquei.Application.Organizacoes.Servicos
             }
         }
 
+        public async Task<PaginacaoResponse<OrganizacaoResponse>> ListarAsync(ListarOrganizacoesRequest request, CancellationToken cancellationToken)
+        {
+            try
+            {
+                IQueryable<Organizacao> query = _organizacoesRepositorio.Query();
+                PaginacaoConsulta<Organizacao> organizacoes = await _organizacoesRepositorio.ListarAsync(query, request.Pagina, request.TamanhoPagina, cancellationToken);
+                
+                return organizacoes.MapearPaginacaoResponse<Organizacao, OrganizacaoResponse>();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro ao processar {operacao}. Detalhes: {Mensagem}", "ListarOrganização", ex.Message);
+                throw;
+            }
+        }
+
         public async Task<OrganizacaoResponse> RecuperarAsync(Guid id, CancellationToken cancellationToken)
         {
             try
@@ -59,6 +79,7 @@ namespace Convoquei.Application.Organizacoes.Servicos
             }
             catch(Exception ex)
             {
+                _logger.LogError(ex, "Erro ao processar {operacao}. Detalhes: {Mensagem}", "RecuperarOrganização", ex.Message);
                 throw;
             }
         }

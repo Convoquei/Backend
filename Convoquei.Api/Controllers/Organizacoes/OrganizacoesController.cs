@@ -1,4 +1,6 @@
-﻿using Convoquei.Application.Organizacoes.Servicos.Interfaces;
+﻿using Convoquei.Api.Responses;
+using Convoquei.Application.Organizacoes.Servicos.Interfaces;
+using Convoquei.DataTransfer.Genericos;
 using Convoquei.DataTransfer.Organizacoes.Requests;
 using Convoquei.DataTransfer.Organizacoes.Responses;
 using Microsoft.AspNetCore.Authorization;
@@ -37,9 +39,11 @@ namespace Convoquei.Api.Controllers.Organizacoes
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> ListarOrganizacoes(CancellationToken cancellationToken)
+        public async Task<ActionResult<ApiResponse<PaginacaoResponse<OrganizacaoResponse>>>> ListarOrganizacoes([FromQuery] ListarOrganizacoesRequest request, CancellationToken cancellationToken)
         {
-            return Ok();
+            PaginacaoResponse<OrganizacaoResponse> response = await _organizacoesAppServico.ListarAsync(request, cancellationToken);
+            
+            return Ok(response);
         }
 
         /// <summary>
