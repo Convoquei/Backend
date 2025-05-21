@@ -79,6 +79,7 @@ namespace Convoquei.Infra.Genericos.Repositorios
             int total = await query.CountAsync(cancellationToken);
 
             IEnumerable<TDataTransfer> dados = await query
+                .AsNoTracking()
                 .Select(expression)
                 .Skip((pagina - 1) * tamanho)
                 .Take(tamanho)

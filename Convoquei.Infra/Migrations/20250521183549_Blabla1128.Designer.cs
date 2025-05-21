@@ -3,6 +3,7 @@ using System;
 using Convoquei.Infra.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Convoquei.Infra.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250521183549_Blabla1128")]
+    partial class Blabla1128
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -363,10 +366,6 @@ namespace Convoquei.Infra.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
-                    b.Property<int>("AntecedenciaDiasCriarEventosRecorrentes")
-                        .HasColumnType("integer")
-                        .HasColumnName("antecedencia_dias_criar_eventos_recorrentes");
-
                     b.Property<DateTime?>("DataAlteracao")
                         .ValueGeneratedOnUpdate()
                         .HasColumnType("timestamp with time zone")
@@ -437,9 +436,9 @@ namespace Convoquei.Infra.Migrations
                         .HasColumnType("character varying(200)")
                         .HasColumnName("nome");
 
-                    b.Property<DateTime?>("UltimaGeracao")
+                    b.Property<DateTime>("ProximaGeracao")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("data_ultima_geracao");
+                        .HasColumnName("data_proxima_geracao");
 
                     b.Property<Guid>("criador_id")
                         .HasColumnType("uuid");
@@ -454,7 +453,7 @@ namespace Convoquei.Infra.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UltimaGeracao");
+                    b.HasIndex("ProximaGeracao");
 
                     b.HasIndex("criador_id");
 

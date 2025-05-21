@@ -499,7 +499,7 @@ namespace Convoquei.Infra.Migrations
                     b.ToTable("usuarios", (string)null);
                 });
 
-            modelBuilder.Entity("Convoquei.Core.RecorrenciasEvento.Entidades.RecorrenciaEventoDias", b =>
+            modelBuilder.Entity("Convoquei.Core.RecorrenciasEvento.Entidades.RecorrenciaEventoPeriodico", b =>
                 {
                     b.HasBaseType("Convoquei.Core.Recorrencias.Entidades.RecorrenciaEventoBase");
 

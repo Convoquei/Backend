@@ -5,7 +5,6 @@ using Convoquei.Core.Genericos.Excecoes;
 using Convoquei.Core.Organizacoes.Enumeradores;
 using Convoquei.Core.Recorrencias.Entidades;
 using Convoquei.Core.Usuarios.Entidades;
-using System.Runtime.InteropServices.Marshalling;
 
 namespace Convoquei.Core.Organizacoes.Entidades
 {
@@ -13,6 +12,7 @@ namespace Convoquei.Core.Organizacoes.Entidades
     {
         public string Nome { get; private set; }
         public bool ExigirAprovacaoDisponibilidade { get; private set; }
+        public int AntecedenciaDiasCriarEventosRecorrentes { get; private set; }
         public virtual Assinatura Assinatura { get; private set; }
         public virtual IList<ConviteOrganizacao> Convites { get; private set; } = new List<ConviteOrganizacao>();
         public virtual HashSet<MembroOrganizacao> Membros { get; private set; } = new();
@@ -26,6 +26,7 @@ namespace Convoquei.Core.Organizacoes.Entidades
             Nome = nome;
             Assinatura = new(planoInicial, this, DateTime.UtcNow, null);
             ExigirAprovacaoDisponibilidade = false;
+            AntecedenciaDiasCriarEventosRecorrentes = 7;
 
             MembroOrganizacao membroCriador = new(usuarioCriador, this, CargoOrganizacaoEnum.Criador);
             Membros.Add(membroCriador);
@@ -40,6 +41,8 @@ namespace Convoquei.Core.Organizacoes.Entidades
         {
             if (Eventos.Any(e => e.Id == evento.Id))
                 throw new RegraDeNegocioExcecao("Evento já cadastrado na organização.");
+            if(Assinatura.Plano.LimiteEventosMensais >= ContarEventosCriadosMesCorrente())
+                throw new RegraDeNegocioExcecao("Limite de eventos mensais atingido, faça upgrade na assinatura para criar mais eventos.");
 
             Eventos.Add(evento);
         }
@@ -92,5 +95,24 @@ namespace Convoquei.Core.Organizacoes.Entidades
 
             return convite;
         }
+
+        public void AdicionarRecorrencia(MembroOrganizacao membroCriador, RecorrenciaEventoBase recorrencia)
+        {
+            membroCriador.ValidarPermissoesAdministrativas();
+
+            Recorrencias.Add(recorrencia);
+        }
+
+        public int ContarEventosCriadosMesCorrente()
+        {
+            DateTime agora = DateTime.UtcNow;
+            DateTime primeiroDiaMes = new DateTime(agora.Year, agora.Month, 1);
+            DateTime primeiroDiaMesSeguinte = primeiroDiaMes.AddMonths(1);
+
+            return Eventos.Count(e =>
+                e.DataCriacao >= primeiroDiaMes &&
+                e.DataCriacao < primeiroDiaMesSeguinte);
+        }
+
     }
 }
