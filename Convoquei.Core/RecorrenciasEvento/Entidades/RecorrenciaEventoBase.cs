@@ -16,10 +16,26 @@ namespace Convoquei.Core.Recorrencias.Entidades
         public TimeSpan FechamentoEscalaAntecedencia { get; private set; }
         public virtual Usuario Criador { get; private set; }
         public virtual Organizacao Organizacao { get; private set; }
-        public DateTime ProximaGeracao { get; private set; }
+        public DateTime? ProximaGeracao { get; private set; }
 
         protected RecorrenciaEventoBase() { }
 
+        protected RecorrenciaEventoBase(string nome, string local, string descricao, DateTime dataHoraInicio, TimeSpan fechamentoEscalaAntecedencia, Usuario criador, Organizacao organizacao)
+        {
+            Nome = nome;
+            Local = local;
+            Descricao = descricao;
+            DataHoraInicio = dataHoraInicio;
+            FechamentoEscalaAntecedencia = fechamentoEscalaAntecedencia;
+            Criador = criador;
+            Organizacao = organizacao;
+
+            GerarDataProximaGeracao();
+        }
+
+        public abstract string DescricaoRecorrencia { get; }
+        public abstract TipoEventoEnum Tipo { get; }
         public abstract IEnumerable<Evento> GerarEventos();
+        public abstract void GerarDataProximaGeracao();
     }
 }
