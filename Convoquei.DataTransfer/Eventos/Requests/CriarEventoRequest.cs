@@ -7,10 +7,6 @@ public record CriarEventoRequest(
     string Nome,
     string Local,
     string Descricao,
-    [EnumDataType(typeof(TipoEventoEnum))] 
-    int Tipo,
-    [EnumDataType(typeof(StatusEventoEnum))] 
-    int Status,
     DateTime DataHoraInicio,
-    TimeSpan FechamentoEscalaAntecedencia
+    int FechamentoEscalaAntecedenciaEmMinutos
 );  

@@ -51,10 +51,9 @@ namespace Convoquei.Application.Eventos.Servicos
                     request.Nome,
                     request.Local,
                     request.Descricao,
-                    (TipoEventoEnum)request.Tipo,
-                    (StatusEventoEnum)request.Status,
+                    TipoEventoEnum.DataUnica,
                     request.DataHoraInicio,
-                    request.FechamentoEscalaAntecedencia,
+                    TimeSpan.FromMinutes(request.FechamentoEscalaAntecedenciaEmMinutos),
                     membro,
                     organizacao
                 );

@@ -22,8 +22,8 @@ namespace Convoquei.Core.Eventos.Entidades
         public virtual Organizacao Organizacao { get; private set; }
         public StatusEventoEnum Status { get; private set; }
         public virtual DadosCancelamentoEvento? Cancelamento { get; private set; }
-        public virtual HashSet<ArquivoEvento> Arquivos { get; private set; }
-        public virtual HashSet<ParticipanteEvento> Participantes { get; private set; }
+        public virtual HashSet<ArquivoEvento> Arquivos { get; private set; } = new();
+        public virtual HashSet<ParticipanteEvento> Participantes { get; private set; } = new();
         public virtual RecorrenciaEventoBase? Recorrencia { get; private set; }
 
         public bool Cancelado => Status == StatusEventoEnum.Cancelado;

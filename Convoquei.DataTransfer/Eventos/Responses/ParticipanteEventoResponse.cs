@@ -1,18 +1,19 @@
 using Convoquei.Core.Eventos.Entidades;
+using Convoquei.DataTransfer.Comuns.Responses;
 using Convoquei.DataTransfer.Usuarios.Response;
 
 namespace Convoquei.DataTransfer.Eventos.Responses;
 
 public record ParticipanteEventoResponse(
     UsuarioResponse Usuario,
-    EventoResponse? Evento
+    GenericoEnumResponse<int> Status
 )
 {
     public static explicit operator ParticipanteEventoResponse(ParticipanteEvento participanteEvento)
     {
         return new ParticipanteEventoResponse(
             (UsuarioResponse)participanteEvento.Usuario,
-            (EventoResponse?)participanteEvento.Evento
+            participanteEvento.StatusParticipacao
         );
     }
 }

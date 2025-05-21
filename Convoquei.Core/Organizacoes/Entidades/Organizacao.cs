@@ -42,7 +42,7 @@ namespace Convoquei.Core.Organizacoes.Entidades
             membroCriador.ValidarPermissoesAdministrativas();
             if (Eventos.Any(e => e.Id == evento.Id))
                 throw new RegraDeNegocioExcecao("Evento já cadastrado na organização.");
-            if(Assinatura.Plano.LimiteEventosMensais >= ContarEventosCriadosMesCorrente())
+            if(Assinatura.Plano.LimiteEventosMensais <= ContarEventosCriadosMesCorrente())
                 throw new RegraDeNegocioExcecao("Limite de eventos mensais atingido, faça upgrade na assinatura para criar mais eventos.");
 
             Eventos.Add(evento);

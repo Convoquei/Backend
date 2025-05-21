@@ -1,4 +1,6 @@
 ﻿using Convoquei.Application.Eventos.Servicos.Interfaces;
+using Convoquei.DataTransfer.Eventos.Requests;
+using Convoquei.DataTransfer.Eventos.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,11 +11,11 @@ namespace Convoquei.Api.Controllers.Eventos
     [Authorize]
     public class EventosController : ControllerBase
     {
-        private readonly IEventosAppServico eventosAppServico;
+        private readonly IEventosAppServico _eventosAppServico;
 
         public EventosController(IEventosAppServico eventosAppServico)
         {
-            this.eventosAppServico = eventosAppServico;
+            this._eventosAppServico = eventosAppServico;
         }
 
         /// <summary>
@@ -22,9 +24,11 @@ namespace Convoquei.Api.Controllers.Eventos
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> CriarEventoAsync([FromRoute] Guid idOrganizacao, CancellationToken cancellationToken)
+        [ProducesResponseType(typeof(EventoResponse), StatusCodes.Status200OK)]
+        public async Task<IActionResult> CriarEventoAsync([FromRoute] Guid idOrganizacao, [FromBody] CriarEventoRequest request, CancellationToken cancellationToken)
         {
-            return Ok();
+            EventoResponse response = await _eventosAppServico.CriarAsync(idOrganizacao, request, cancellationToken);
+            return Ok(response);
         }
 
         /// <summary>

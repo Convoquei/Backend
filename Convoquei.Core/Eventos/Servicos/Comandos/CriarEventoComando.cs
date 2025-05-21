@@ -8,7 +8,6 @@ public record CriarEventoComando(
     string Local,
     string Descricao,
     TipoEventoEnum Tipo,
-    StatusEventoEnum Status,
     DateTime DataHoraInicio,
     TimeSpan FechamentoEscalaAntecedencia,
     MembroOrganizacao Criador,
