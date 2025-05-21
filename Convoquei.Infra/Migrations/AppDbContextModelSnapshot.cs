@@ -18,6 +18,9 @@ namespace Convoquei.Infra.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "9.0.5")
+                .HasAnnotation("Proxies:ChangeTracking", false)
+                .HasAnnotation("Proxies:CheckEquality", false)
+                .HasAnnotation("Proxies:LazyLoading", true)
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -47,15 +50,10 @@ namespace Convoquei.Infra.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("data_inicio");
 
-                    b.Property<Guid?>("PlanoId")
-                        .HasColumnType("uuid");
-
                     b.Property<Guid>("plano_id")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("PlanoId");
 
                     b.HasIndex("plano_id");
 
@@ -334,17 +332,17 @@ namespace Convoquei.Infra.Migrations
                         .HasColumnName("data_criacao")
                         .HasDefaultValueSql("NOW()");
 
-                    b.Property<Guid>("organizacao_id")
+                    b.Property<Guid>("UsuarioId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("usuario_id")
+                    b.Property<Guid>("organizacao_id")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("organizacao_id");
+                    b.HasIndex("UsuarioId");
 
-                    b.HasIndex("usuario_id");
+                    b.HasIndex("organizacao_id");
 
                     b.ToTable("membros_organizacao", (string)null);
                 });
@@ -424,10 +422,6 @@ namespace Convoquei.Infra.Migrations
                         .HasForeignKey("Convoquei.Core.Assinaturas.Entidades.Assinatura", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("Convoquei.Core.Assinaturas.Entidades.Plano", null)
-                        .WithMany("_assinaturas")
-                        .HasForeignKey("PlanoId");
 
                     b.HasOne("Convoquei.Core.Assinaturas.Entidades.Plano", "Plano")
                         .WithMany("Assinaturas")
@@ -579,15 +573,15 @@ namespace Convoquei.Infra.Migrations
 
             modelBuilder.Entity("Convoquei.Core.Organizacoes.Entidades.MembroOrganizacao", b =>
                 {
-                    b.HasOne("Convoquei.Core.Organizacoes.Entidades.Organizacao", "Organizacao")
-                        .WithMany("Membros")
-                        .HasForeignKey("organizacao_id")
+                    b.HasOne("Convoquei.Core.Usuarios.Entidades.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Convoquei.Core.Usuarios.Entidades.Usuario", "Usuario")
-                        .WithMany()
-                        .HasForeignKey("usuario_id")
+                    b.HasOne("Convoquei.Core.Organizacoes.Entidades.Organizacao", "Organizacao")
+                        .WithMany("Membros")
+                        .HasForeignKey("organizacao_id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -652,8 +646,6 @@ namespace Convoquei.Infra.Migrations
             modelBuilder.Entity("Convoquei.Core.Assinaturas.Entidades.Plano", b =>
                 {
                     b.Navigation("Assinaturas");
-
-                    b.Navigation("_assinaturas");
                 });
 
             modelBuilder.Entity("Convoquei.Core.Eventos.Entidades.Evento", b =>

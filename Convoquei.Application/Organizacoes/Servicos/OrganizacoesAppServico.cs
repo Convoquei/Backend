@@ -1,12 +1,13 @@
 ﻿using Convoquei.Application.Autenticacao;
 using Convoquei.Application.Genericos;
 using Convoquei.Application.Organizacoes.Servicos.Interfaces;
+using Convoquei.Core.Genericos.Excecoes;
 using Convoquei.Core.Genericos.Repositorios.Consultas;
 using Convoquei.Core.Genericos.UoW;
 using Convoquei.Core.Organizacoes.Entidades;
 using Convoquei.Core.Organizacoes.Repositorios;
 using Convoquei.Core.Organizacoes.Servicos.Interfaces;
-using Convoquei.DataTransfer.Genericos;
+using Convoquei.DataTransfer.Genericos.Responses;
 using Convoquei.DataTransfer.Organizacoes.Requests;
 using Convoquei.DataTransfer.Organizacoes.Responses;
 using Microsoft.EntityFrameworkCore;
@@ -57,7 +58,11 @@ namespace Convoquei.Application.Organizacoes.Servicos
         {
             try
             {
-                IQueryable<Organizacao> query = _organizacoesRepositorio.Query();
+                IQueryable<Organizacao> query = _organizacoesRepositorio
+                    .QueryAsNoTracking()
+                    .Include(o => o.Membros).ThenInclude(m => m.Usuario)
+                    .Include(o => o.Assinatura).ThenInclude(a => a.Plano);
+
                 PaginacaoConsulta<Organizacao> organizacoes = await _organizacoesRepositorio.ListarAsync(query, request.Pagina, request.TamanhoPagina, cancellationToken);
                 
                 return organizacoes.MapearPaginacaoResponse<Organizacao, OrganizacaoResponse>();
@@ -69,13 +74,17 @@ namespace Convoquei.Application.Organizacoes.Servicos
             }
         }
 
-        public async Task<OrganizacaoResponse> RecuperarAsync(Guid id, CancellationToken cancellationToken)
+        public async Task<OrganizacaoResponse?> RecuperarAsync(Guid id, CancellationToken cancellationToken)
         {
             try
             {
-                Organizacao? organizacao = await _organizacoesRepositorio.RecuperarAsync(id, cancellationToken);
+                Organizacao organizacao = await _organizacoesServico.ValidarAsync(id, cancellationToken);
 
                 return (OrganizacaoResponse)organizacao;
+            }
+            catch(EntidadeNaoEncontradaExcecao<Organizacao>)
+            {
+                return null;
             }
             catch(Exception ex)
             {

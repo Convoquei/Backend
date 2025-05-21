@@ -20,12 +20,12 @@ public class MembroOrganizacaoMap : IEntityTypeConfiguration<MembroOrganizacao>
 
         builder.HasOne(m => m.Usuario)
             .WithMany()
-            .HasForeignKey("usuario_id")
+            //.HasForeignKey("usuario_id")
             .IsRequired();
 
         builder.HasOne(m => m.Organizacao)
             .WithMany(o => o.Membros)
-            .HasForeignKey("organizacao_id")
+            //.HasForeignKey("organizacao_id")
             .IsRequired();
     }
 }

@@ -6,5 +6,6 @@ namespace Convoquei.Core.Organizacoes.Servicos.Interfaces
     public interface IOrganizacoesServico
     {
         Task<Organizacao> CriarAsync(string nome, Usuario criador, CancellationToken token);
+        Task<Organizacao> ValidarAsync(Guid id, CancellationToken cancellationToken);
     }
 }

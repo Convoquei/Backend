@@ -20,7 +20,7 @@ namespace Convoquei.Infra.Seguranca.Servicos
 
         public Token GerarToken(Usuario usuario)
         {
-            string token = GerarToken(usuario, 15);
+            string token = GerarToken(usuario, 120);
             string refreshToken = GerarToken(usuario, 60 * 24 * 7);
 
             return new Token(token, refreshToken);

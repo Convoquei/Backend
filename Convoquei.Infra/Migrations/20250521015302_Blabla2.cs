@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Convoquei.Infra.Migrations
 {
     /// <inheritdoc />
-    public partial class Inicial : Migration
+    public partial class Blabla2 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -50,7 +50,10 @@ namespace Convoquei.Infra.Migrations
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     nome = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    senha = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     email = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
+                    token_acesso = table.Column<string>(type: "text", nullable: true),
+                    token_refresh = table.Column<string>(type: "text", nullable: true),
                     data_criacao = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
                     data_alteracao = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
@@ -67,7 +70,6 @@ namespace Convoquei.Infra.Migrations
                     plano_id = table.Column<Guid>(type: "uuid", nullable: false),
                     data_inicio = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     data_fim = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    PlanoId = table.Column<Guid>(type: "uuid", nullable: true),
                     data_criacao = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
                     data_alteracao = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
@@ -80,11 +82,6 @@ namespace Convoquei.Infra.Migrations
                         principalTable: "organizacoes",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_assinaturas_planos_PlanoId",
-                        column: x => x.PlanoId,
-                        principalTable: "planos",
-                        principalColumn: "id");
                     table.ForeignKey(
                         name: "FK_assinaturas_planos_plano_id",
                         column: x => x.plano_id,
@@ -170,7 +167,7 @@ namespace Convoquei.Infra.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
-                    usuario_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    UsuarioId = table.Column<Guid>(type: "uuid", nullable: false),
                     organizacao_id = table.Column<Guid>(type: "uuid", nullable: false),
                     cargo = table.Column<string>(type: "text", nullable: false),
                     data_criacao = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
@@ -186,8 +183,8 @@ namespace Convoquei.Infra.Migrations
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_membros_organizacao_usuarios_usuario_id",
-                        column: x => x.usuario_id,
+                        name: "FK_membros_organizacao_usuarios_UsuarioId",
+                        column: x => x.UsuarioId,
                         principalTable: "usuarios",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
@@ -268,11 +265,6 @@ namespace Convoquei.Infra.Migrations
                 column: "plano_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_assinaturas_PlanoId",
-                table: "assinaturas",
-                column: "PlanoId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_convites_organizacao_convidador_id",
                 table: "convites_organizacao",
                 column: "convidador_id");
@@ -303,9 +295,9 @@ namespace Convoquei.Infra.Migrations
                 column: "organizacao_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_membros_organizacao_usuario_id",
+                name: "IX_membros_organizacao_UsuarioId",
                 table: "membros_organizacao",
-                column: "usuario_id");
+                column: "UsuarioId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_participantes_evento_evento_id",
@@ -321,6 +313,12 @@ namespace Convoquei.Infra.Migrations
                 name: "uk_planos_tipo",
                 table: "planos",
                 column: "tipo",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_usuarios_email",
+                table: "usuarios",
+                column: "email",
                 unique: true);
         }
 

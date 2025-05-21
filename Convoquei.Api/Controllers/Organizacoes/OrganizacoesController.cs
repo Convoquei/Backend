@@ -1,6 +1,6 @@
 ﻿using Convoquei.Api.Responses;
 using Convoquei.Application.Organizacoes.Servicos.Interfaces;
-using Convoquei.DataTransfer.Genericos;
+using Convoquei.DataTransfer.Genericos.Responses;
 using Convoquei.DataTransfer.Organizacoes.Requests;
 using Convoquei.DataTransfer.Organizacoes.Responses;
 using Microsoft.AspNetCore.Authorization;
@@ -21,29 +21,33 @@ namespace Convoquei.Api.Controllers.Organizacoes
         }
 
         /// <summary>
-        /// Criar organização
+        /// Criar uma nova organização
         /// </summary>
-        /// <param name="request">Dados da organizacao</param>
+        /// <param name="request"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<ActionResult<OrganizacaoResponse>> CriarOrganizacao([FromBody] CriarOrganizacaoRequest request, CancellationToken cancellationToken)
+        [ProducesResponseType(typeof(ApiResponse<OrganizacaoResponse>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<ApiResponse<OrganizacaoResponse>>> CriarOrganizacao([FromBody] CriarOrganizacaoRequest request, CancellationToken cancellationToken)
         {
             OrganizacaoResponse response = await _organizacoesAppServico.CriarAsync(request, cancellationToken);
 
-            return Ok(response);
+            return CreatedAtAction(nameof(ObterPorId), new { id = response.Id }, ApiResponse<OrganizacaoResponse>.Ok(response, "Organização criada com sucesso."));
         }
 
         /// <summary>
         /// Listar organizações
         /// </summary>
+        /// <param name="request">Filtros</param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [HttpGet]
+        [ProducesResponseType(typeof(ApiResponse<PaginacaoResponse<OrganizacaoResponse>>), StatusCodes.Status200OK)]
         public async Task<ActionResult<ApiResponse<PaginacaoResponse<OrganizacaoResponse>>>> ListarOrganizacoes([FromQuery] ListarOrganizacoesRequest request, CancellationToken cancellationToken)
         {
             PaginacaoResponse<OrganizacaoResponse> response = await _organizacoesAppServico.ListarAsync(request, cancellationToken);
-            
-            return Ok(response);
+
+            return Ok(ApiResponse<PaginacaoResponse<OrganizacaoResponse>>.Ok(response, $"Listando {response.Total} organizações."));
         }
 
         /// <summary>
@@ -54,11 +58,14 @@ namespace Convoquei.Api.Controllers.Organizacoes
         /// <returns></returns>
         [HttpGet]
         [Route("{id}")]
-        public async Task<IActionResult> ObterPorId(Guid id, CancellationToken cancellationToken)
+        [ProducesResponseType(typeof(ApiResponse<OrganizacaoResponse>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<ApiResponse<OrganizacaoResponse>>> ObterPorId(Guid id, CancellationToken cancellationToken)
         {
-            OrganizacaoResponse response = await _organizacoesAppServico.RecuperarAsync(id, cancellationToken);
+            OrganizacaoResponse? response = await _organizacoesAppServico.RecuperarAsync(id, cancellationToken);
+            if(response is null)
+                return BadRequest(ApiResponse<OrganizacaoResponse>.Falha("Organização não encontrada."));
 
-            return Ok(response);
+            return Ok(ApiResponse<OrganizacaoResponse>.Ok(response, "Organização encontrada"));
         }
     }
 }
