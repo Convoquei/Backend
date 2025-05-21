@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Convoquei.Infra.RecorrenciasEvento.Mapeamentos
 {
-    public class RecorrenciaEventoDiasMap : IEntityTypeConfiguration<RecorrenciaEventoDias>
+    public class RecorrenciaEventoPeriodicoMap : IEntityTypeConfiguration<RecorrenciaEventoPeriodico>
     {
-        public void Configure(EntityTypeBuilder<RecorrenciaEventoDias> builder)
+        public void Configure(EntityTypeBuilder<RecorrenciaEventoPeriodico> builder)
         {
             builder.Property(r => r.IntervaloDias)
                 .HasColumnName("intervalo_dias")

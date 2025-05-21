@@ -1,4 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Convoquei.Api.Responses;
+using Convoquei.Application.RecorrenciasEvento.Servicos.Interfaces;
+using Convoquei.DataTransfer.RecorrenciasEvento.Requests;
+using Convoquei.DataTransfer.RecorrenciasEvento.Responses;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Convoquei.Api.Controllers.Recorrencias
@@ -8,6 +12,13 @@ namespace Convoquei.Api.Controllers.Recorrencias
     [Route("api/organizacoes/{idOrganizacao:guid}/recorrencias-eventos")]
     public class RecorrenciasController : ControllerBase
     {
+        private readonly IRecorrenciasEventoAppServico _recorrenciasEventoAppServico;
+
+        public RecorrenciasController(IRecorrenciasEventoAppServico recorrenciasEventoAppServico)
+        {
+            _recorrenciasEventoAppServico = recorrenciasEventoAppServico;
+        }
+
         /// <summary>
         /// Recuperar uma recorrencia de evento
         /// </summary>
@@ -36,13 +47,18 @@ namespace Convoquei.Api.Controllers.Recorrencias
         /// <summary>
         /// Criar uma nova recorrencia de eventos
         /// </summary>
-        /// <param name="idOrganizacao"></param>
+        /// <param name="idOrganizacao">ID da organização</param>
+        /// <param name="request"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> CriarAsync([FromRoute] Guid idOrganizacao, CancellationToken cancellationToken)
+        public async Task<ActionResult<ApiResponse<RecorrenciaEventoResponse>>> CriarAsync([FromRoute] Guid idOrganizacao, [FromBody] CriarRecorrenciaRequest request, CancellationToken cancellationToken)
         {
-            return Ok();
+            if(!ModelState.IsValid)
+                return BadRequest(ApiResponse<string>.Falha(ModelState));
+
+            RecorrenciaEventoResponse recorrencia = await _recorrenciasEventoAppServico.CriarRecorrenciaAsync(idOrganizacao, request, cancellationToken);
+            return Ok(ApiResponse<RecorrenciaEventoResponse>.Ok(recorrencia, "Recorrência criada com sucesso!"));
         }
 
         /// <summary>

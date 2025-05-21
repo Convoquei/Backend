@@ -38,9 +38,8 @@ namespace Convoquei.Infra.RecorrenciasEvento.Mapeamentos
                 .HasColumnName("fechamento_escala_antecedencia")
                 .IsRequired();
 
-            builder.Property(r => r.ProximaGeracao)
-                .HasColumnName("data_proxima_geracao")
-                .IsRequired();
+            builder.Property(r => r.UltimaGeracao)
+                .HasColumnName("data_ultima_geracao");
 
             builder.HasOne(r => r.Criador)
                 .WithMany()
@@ -54,9 +53,10 @@ namespace Convoquei.Infra.RecorrenciasEvento.Mapeamentos
 
             builder.HasDiscriminator<string>("tipo_recorrencia")
                 .HasValue<RecorrenciaEventoSemanal>("semanal")
-                .HasValue<RecorrenciaEventoDias>("dias");
+                .HasValue<RecorrenciaEventoPeriodico>("dias");
 
-            builder.HasIndex(r => r.ProximaGeracao);
+            builder.Ignore(c => c.Tipo);
+            builder.HasIndex(r => r.UltimaGeracao);
         }
     }
 }

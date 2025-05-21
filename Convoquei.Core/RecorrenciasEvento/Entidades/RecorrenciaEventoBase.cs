@@ -16,7 +16,7 @@ namespace Convoquei.Core.Recorrencias.Entidades
         public TimeSpan FechamentoEscalaAntecedencia { get; private set; }
         public virtual Usuario Criador { get; private set; }
         public virtual Organizacao Organizacao { get; private set; }
-        public DateTime? ProximaGeracao { get; private set; }
+        public DateTime? UltimaGeracao { get; private set; }
 
         protected RecorrenciaEventoBase() { }
 
@@ -29,13 +29,22 @@ namespace Convoquei.Core.Recorrencias.Entidades
             FechamentoEscalaAntecedencia = fechamentoEscalaAntecedencia;
             Criador = criador;
             Organizacao = organizacao;
-
-            GerarDataProximaGeracao();
+            UltimaGeracao = null;
         }
 
+        public void ExecutarRecorrencia()
+        {
+            if (PrevisaoProximaGeracao > DateTime.UtcNow.Date)
+                return;
+
+            GerarEventos();
+
+            UltimaGeracao = DateTime.UtcNow.Date;
+        }
+
+        public abstract DateTime PrevisaoProximaGeracao { get; }
         public abstract string DescricaoRecorrencia { get; }
         public abstract TipoEventoEnum Tipo { get; }
-        public abstract IEnumerable<Evento> GerarEventos();
-        public abstract void GerarDataProximaGeracao();
+        protected abstract IEnumerable<Evento> GerarEventos();
     }
 }

@@ -65,7 +65,7 @@ namespace Convoquei.Core.Eventos.Entidades
 
             if (Status == StatusEventoEnum.Cancelado)
                 throw new RegraDeNegocioExcecao($"Esse evento já está cancelado! ({Cancelamento})");
-            if (DataHoraInicio < DateTime.Now)
+            if (DataHoraInicio < DateTime.UtcNow)
                 throw new RegraDeNegocioExcecao("Eventos passados não podem ser cancelados.");
 
             Status = StatusEventoEnum.Cancelado;

@@ -11,6 +11,17 @@ namespace Convoquei.Core.RecorrenciasEvento.Entidades
     public class RecorrenciaEventoSemanal : RecorrenciaEventoBase
     {
         public DiasEventoEnumFlag DiasRecorrenciaSemanaisFlag { get; private set; }
+        public override DateTime PrevisaoProximaGeracao { get 
+            { 
+                int diasAntecedenciaCriarEventos = Organizacao.AntecedenciaDiasCriarEventosRecorrentes;
+
+                DateTime projecaoProximaData = UltimaGeracao.HasValue ?
+                    UltimaGeracao.Value.AddDays(diasAntecedenciaCriarEventos).Date
+                    : DataHoraInicio.AddDays(-diasAntecedenciaCriarEventos).Date;
+
+                return projecaoProximaData;
+            } 
+        }
 
         protected RecorrenciaEventoSemanal()
         {
@@ -23,19 +34,16 @@ namespace Convoquei.Core.RecorrenciasEvento.Entidades
                 throw new RegraDeNegocioExcecao("É necessário informar ao menos um dia para criar uma recorrencia semanal.");
 
             DiasRecorrenciaSemanaisFlag = diasEventoEnumFlag;
+
+            ExecutarRecorrencia();
         }
 
         public override TipoEventoEnum Tipo => TipoEventoEnum.Semanal;
         public override string DescricaoRecorrencia => $"Todo {GerarDiasSemanaFormatado()}";
 
-        public override IEnumerable<Evento> GerarEventos()
+        protected override IEnumerable<Evento> GerarEventos()
         {
-            throw new NotImplementedException();
-        }
-
-        public override void GerarDataProximaGeracao()
-        {
-
+            return Enumerable.Empty<Evento>();
         }
 
         private string GerarDiasSemanaFormatado()

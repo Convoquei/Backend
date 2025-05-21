@@ -42,7 +42,7 @@ namespace Convoquei.Infra.Seguranca.Servicos
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.Now.AddMinutes(minutosExpiracao),
+                expires: DateTime.UtcNow.AddMinutes(minutosExpiracao),
                 signingCredentials: creds
             );
 

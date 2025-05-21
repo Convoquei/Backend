@@ -25,6 +25,10 @@ namespace Convoquei.Infra.Organizacoes.Mapeamentos
                 .HasColumnName("exigir_aprovacao_disponibilidade")
                 .IsRequired();
 
+            builder.Property(u => u.AntecedenciaDiasCriarEventosRecorrentes)
+                .HasColumnName("antecedencia_dias_criar_eventos_recorrentes")
+                .IsRequired();
+
             builder.HasOne(o => o.Assinatura)
                 .WithOne(a => a.Organizacao)
                 .HasForeignKey<Assinatura>(a => a.Id)
