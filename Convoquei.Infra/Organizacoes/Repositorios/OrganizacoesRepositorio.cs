@@ -1,6 +1,7 @@
 ﻿using Convoquei.Core.Genericos.Repositorios.Consultas;
 using Convoquei.Core.Organizacoes.Entidades;
 using Convoquei.Core.Organizacoes.Repositorios;
+using Convoquei.Core.Usuarios.Entidades;
 using Convoquei.Infra.Data;
 using Convoquei.Infra.Genericos.Extensoes;
 using Convoquei.Infra.Genericos.Repositorios;
@@ -25,6 +26,26 @@ namespace Convoquei.Infra.Organizacoes.Repositorios
             PaginacaoConsulta<ConviteOrganizacao> convites = await query.PaginarAsync(pagina, tamanhoPagina, cancellationToken);
 
             return convites;
+        }
+
+        public async Task<PaginacaoConsulta<Organizacao>> ListarOrganizacoesUsuarioAsync(Usuario usuario, int pagina,
+            int tamanhoPagina, CancellationToken cancellationToken)
+        {
+            var query = _context.Set<MembroOrganizacao>()
+                .AsNoTracking()
+                .Include(c => c.Organizacao)
+                .ThenInclude(o => o.Assinatura)
+                .ThenInclude(a => a.Plano)
+                .Include(o => o.Organizacao)
+                .ThenInclude(o => o.Membros)
+                .ThenInclude(m => m.Usuario)
+                .Where(c => c.Usuario == usuario)
+                .Select(c => c.Organizacao);
+
+            PaginacaoConsulta<Organizacao> organizacoes =
+                await query.PaginarAsync(pagina, tamanhoPagina, cancellationToken);
+
+            return organizacoes;
         }
     }
 }

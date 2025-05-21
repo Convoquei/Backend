@@ -7,6 +7,7 @@ using Convoquei.Core.Genericos.UoW;
 using Convoquei.Core.Organizacoes.Entidades;
 using Convoquei.Core.Organizacoes.Repositorios;
 using Convoquei.Core.Organizacoes.Servicos.Interfaces;
+using Convoquei.Core.Usuarios.Entidades;
 using Convoquei.DataTransfer.Genericos.Responses;
 using Convoquei.DataTransfer.Organizacoes.Requests;
 using Convoquei.DataTransfer.Organizacoes.Responses;
@@ -58,12 +59,9 @@ namespace Convoquei.Application.Organizacoes.Servicos
         {
             try
             {
-                IQueryable<Organizacao> query = _organizacoesRepositorio
-                    .QueryAsNoTracking()
-                    .Include(o => o.Membros).ThenInclude(m => m.Usuario)
-                    .Include(o => o.Assinatura).ThenInclude(a => a.Plano);
+                Usuario usuario = _usuarioSessao.Usuario;
 
-                PaginacaoConsulta<Organizacao> organizacoes = await _organizacoesRepositorio.ListarAsync(query, request.Pagina, request.TamanhoPagina, cancellationToken);
+                PaginacaoConsulta<Organizacao> organizacoes = await _organizacoesRepositorio.ListarOrganizacoesUsuarioAsync(usuario, request.Pagina, request.TamanhoPagina, cancellationToken);
                 
                 return organizacoes.MapearPaginacaoResponse<Organizacao, OrganizacaoResponse>();
             }

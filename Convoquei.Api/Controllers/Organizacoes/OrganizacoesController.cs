@@ -43,7 +43,7 @@ namespace Convoquei.Api.Controllers.Organizacoes
         /// <returns></returns>
         [HttpGet]
         [ProducesResponseType(typeof(ApiResponse<PaginacaoResponse<OrganizacaoResponse>>), StatusCodes.Status200OK)]
-        public async Task<ActionResult<ApiResponse<PaginacaoResponse<OrganizacaoResponse>>>> ListarOrganizacoes([FromQuery] ListarOrganizacoesRequest request, CancellationToken cancellationToken)
+        public async Task<ActionResult<ApiResponse<PaginacaoResponse<OrganizacaoResponse>>>> ListarOrganizacoesAsync([FromQuery] ListarOrganizacoesRequest request, CancellationToken cancellationToken)
         {
             PaginacaoResponse<OrganizacaoResponse> response = await _organizacoesAppServico.ListarAsync(request, cancellationToken);
 
