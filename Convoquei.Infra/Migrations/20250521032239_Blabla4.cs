@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Convoquei.Infra.Migrations
 {
     /// <inheritdoc />
-    public partial class Blabla2 : Migration
+    public partial class Blabla4 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -191,6 +191,43 @@ namespace Convoquei.Infra.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "recorrencias_evento",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    nome = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    local = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    descricao = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
+                    data_hora_inicio = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    fechamento_escala_antecedencia = table.Column<TimeSpan>(type: "interval", nullable: false),
+                    criador_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    organizacao_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    status = table.Column<int>(type: "integer", nullable: false),
+                    data_proxima_geracao = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    tipo_recorrencia = table.Column<string>(type: "character varying(21)", maxLength: 21, nullable: false),
+                    intervalo_dias = table.Column<int>(type: "integer", nullable: true),
+                    dias_recorrencia_flag = table.Column<int>(type: "integer", nullable: true),
+                    data_criacao = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
+                    data_alteracao = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_recorrencias_evento", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_recorrencias_evento_organizacoes_organizacao_id",
+                        column: x => x.organizacao_id,
+                        principalTable: "organizacoes",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_recorrencias_evento_usuarios_criador_id",
+                        column: x => x.criador_id,
+                        principalTable: "usuarios",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "arquivos_evento",
                 columns: table => new
                 {
@@ -316,6 +353,16 @@ namespace Convoquei.Infra.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_recorrencias_evento_criador_id",
+                table: "recorrencias_evento",
+                column: "criador_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_recorrencias_evento_organizacao_id",
+                table: "recorrencias_evento",
+                column: "organizacao_id");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_usuarios_email",
                 table: "usuarios",
                 column: "email",
@@ -339,6 +386,9 @@ namespace Convoquei.Infra.Migrations
 
             migrationBuilder.DropTable(
                 name: "participantes_evento");
+
+            migrationBuilder.DropTable(
+                name: "recorrencias_evento");
 
             migrationBuilder.DropTable(
                 name: "planos");

@@ -8,7 +8,6 @@
 
         public EntidadeBase()
         {
-            Id = Guid.NewGuid();
             DataCriacao = DateTime.UtcNow;
             DataAlteracao = null;
         }

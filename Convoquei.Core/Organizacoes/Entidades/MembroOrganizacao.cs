@@ -38,5 +38,11 @@ namespace Convoquei.Core.Organizacoes.Entidades
 
             return Cargo is CargoOrganizacaoEnum.Criador or CargoOrganizacaoEnum.Criador;
         }
+
+        public void ValidarPermissoesAdministrativas()
+        {
+            if (!PossuiPermissoesAdministrativas(Organizacao))
+                throw new RegraDeNegocioExcecao("É necessário possuir permissões administrativas na organização.");
+        }
     }
 }

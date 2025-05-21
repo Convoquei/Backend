@@ -9,7 +9,7 @@ namespace Convoquei.Infra.Genericos.Repositorios
     public abstract class RepositorioGenerico<TEntidade> : IRepositorioGenerico<TEntidade>
         where TEntidade : EntidadeBase
     {
-        private readonly DbContext _context;
+        protected readonly DbContext _context;
         private readonly DbSet<TEntidade> _dbSet;
 
         protected RepositorioGenerico(DbContext context)

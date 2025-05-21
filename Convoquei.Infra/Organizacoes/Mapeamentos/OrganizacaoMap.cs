@@ -33,10 +33,11 @@ namespace Convoquei.Infra.Organizacoes.Mapeamentos
             builder.HasMany(o => o.Convites)
                 .WithOne(c => c.Organizacao)
                 .HasForeignKey("organizacao_id") 
+                .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired();
 
             builder.HasMany(o => o.Membros)
-                .WithOne(m => m.Organizacao)
+                .WithOne(c => c.Organizacao)
                 .HasForeignKey("organizacao_id")
                 .IsRequired();
 

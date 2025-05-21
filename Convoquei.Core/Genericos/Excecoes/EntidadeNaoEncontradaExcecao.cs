@@ -1,12 +1,8 @@
-﻿using Convoquei.Core.Genericos.Entidades;
-
-namespace Convoquei.Core.Genericos.Excecoes
+﻿namespace Convoquei.Core.Genericos.Excecoes
 {
-    public class EntidadeNaoEncontradaExcecao<T> : Exception where T : EntidadeBase
+    public class EntidadeNaoEncontradaExcecao : Exception 
     {
-        private const string mensagem = $"Entidade {nameof(T)} não encontrada.";
-
-        public EntidadeNaoEncontradaExcecao() : base(mensagem)
+        public EntidadeNaoEncontradaExcecao(string mensagem) : base(mensagem)
         {
             
         }

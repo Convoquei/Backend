@@ -3,6 +3,7 @@ using System;
 using Convoquei.Infra.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Convoquei.Infra.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250521032459_Blabla5")]
+    partial class Blabla5
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -299,10 +302,6 @@ namespace Convoquei.Infra.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("data_expiracao");
 
-                    b.Property<DateTime?>("UltimoReenvio")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("ultimo_reenvio");
-
                     b.Property<Guid>("convidador_id")
                         .HasColumnType("uuid");
 
@@ -437,6 +436,10 @@ namespace Convoquei.Infra.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("data_proxima_geracao");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("integer")
+                        .HasColumnName("status");
+
                     b.Property<Guid>("criador_id")
                         .HasColumnType("uuid");
 
@@ -449,8 +452,6 @@ namespace Convoquei.Infra.Migrations
                         .HasColumnType("character varying(21)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ProximaGeracao");
 
                     b.HasIndex("criador_id");
 

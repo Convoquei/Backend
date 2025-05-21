@@ -1,14 +1,16 @@
-﻿using Convoquei.Core.Eventos.Enumeradores;
+﻿using Convoquei.Core.Eventos.Contratos;
+using Convoquei.Core.Eventos.Enumeradores;
 using Convoquei.Core.Eventos.ValueObjects;
 using Convoquei.Core.Genericos.Entidades;
 using Convoquei.Core.Genericos.Excecoes;
 using Convoquei.Core.Genericos.Extensoes;
 using Convoquei.Core.Organizacoes.Entidades;
+using Convoquei.Core.Recorrencias.Entidades;
 using Convoquei.Core.Usuarios.Entidades;
 
 namespace Convoquei.Core.Eventos.Entidades
 {
-    public class Evento : EntidadeBase
+    public class Evento : EntidadeBase, IEventoContrato
     {
         public string Nome { get; private set; }
         public string Local { get; private set; }
@@ -22,13 +24,13 @@ namespace Convoquei.Core.Eventos.Entidades
         public virtual DadosCancelamentoEvento? Cancelamento { get; private set; }
         public virtual HashSet<ArquivoEvento> Arquivos { get; private set; }
         public virtual HashSet<ParticipanteEvento> Participantes { get; private set; }
+        public virtual RecorrenciaEventoBase? Recorrencia { get; private set; }
 
         public bool Cancelado => Status == StatusEventoEnum.Cancelado;
 
         public Evento(string nome, string local, string descricao, TipoEventoEnum tipo, DateTime dataHoraInicio, TimeSpan fechamentoEscalaAntecedencia, MembroOrganizacao membroCriador, Organizacao organizacao)
         {
-            if(!membroCriador.PossuiPermissoesAdministrativas(organizacao))
-                throw new RegraDeNegocioExcecao("É necessário possuir permissões administrativas na organização para criar eventos.");
+            membroCriador.ValidarPermissoesAdministrativas();
 
             Nome = nome;
             Local = local;
@@ -59,8 +61,8 @@ namespace Convoquei.Core.Eventos.Entidades
 
         public void Cancelar(MembroOrganizacao membroCancelando, string motivo)
         {
-            if (!membroCancelando.PossuiPermissoesAdministrativas(Organizacao))
-                throw new RegraDeNegocioExcecao("Somente administradores da organização podem cancelar eventos.");
+            membroCancelando.ValidarPermissoesAdministrativas();
+
             if (Status == StatusEventoEnum.Cancelado)
                 throw new RegraDeNegocioExcecao($"Esse evento já está cancelado! ({Cancelamento})");
             if (DataHoraInicio < DateTime.Now)

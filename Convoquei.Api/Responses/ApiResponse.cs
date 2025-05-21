@@ -9,6 +9,9 @@
         public static ApiResponse<T> Ok(T dados, string? mensagem = null)
             => new() { Sucesso = true, Dados = dados, Mensagem = mensagem };
 
+        public static ApiResponse<T> Ok(string mensagem)
+            => new() { Sucesso = true, Mensagem = mensagem };
+
         public static ApiResponse<T> Falha(string mensagem)
             => new() { Sucesso = false, Mensagem = mensagem };
     }

@@ -3,6 +3,7 @@ using System;
 using Convoquei.Infra.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Convoquei.Infra.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250521052618_Blabla7")]
+    partial class Blabla7
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -299,7 +302,7 @@ namespace Convoquei.Infra.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("data_expiracao");
 
-                    b.Property<DateTime?>("UltimoReenvio")
+                    b.Property<DateTime>("UltimoReenvio")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("ultimo_reenvio");
 

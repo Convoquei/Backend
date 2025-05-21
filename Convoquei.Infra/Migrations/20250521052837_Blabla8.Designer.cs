@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Convoquei.Infra.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250521015302_Blabla2")]
-    partial class Blabla2
+    [Migration("20250521052837_Blabla8")]
+    partial class Blabla8
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -228,11 +228,16 @@ namespace Convoquei.Infra.Migrations
                     b.Property<Guid>("organizacao_id")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("recorrencia_id")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.HasIndex("criador_id");
 
                     b.HasIndex("organizacao_id");
+
+                    b.HasIndex("recorrencia_id");
 
                     b.ToTable("eventos", (string)null);
                 });
@@ -296,6 +301,10 @@ namespace Convoquei.Infra.Migrations
                     b.Property<DateTime>("DataExpiracao")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("data_expiracao");
+
+                    b.Property<DateTime?>("UltimoReenvio")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("ultimo_reenvio");
 
                     b.Property<Guid>("convidador_id")
                         .HasColumnType("uuid");
@@ -383,6 +392,80 @@ namespace Convoquei.Infra.Migrations
                     b.ToTable("organizacoes", (string)null);
                 });
 
+            modelBuilder.Entity("Convoquei.Core.Recorrencias.Entidades.RecorrenciaEventoBase", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTime?>("DataAlteracao")
+                        .ValueGeneratedOnUpdate()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("data_alteracao");
+
+                    b.Property<DateTime>("DataCriacao")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("data_criacao")
+                        .HasDefaultValueSql("NOW()");
+
+                    b.Property<DateTime>("DataHoraInicio")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("data_hora_inicio");
+
+                    b.Property<string>("Descricao")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("descricao");
+
+                    b.Property<TimeSpan>("FechamentoEscalaAntecedencia")
+                        .HasColumnType("interval")
+                        .HasColumnName("fechamento_escala_antecedencia");
+
+                    b.Property<string>("Local")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("local");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("nome");
+
+                    b.Property<DateTime>("ProximaGeracao")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("data_proxima_geracao");
+
+                    b.Property<Guid>("criador_id")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("organizacao_id")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("tipo_recorrencia")
+                        .IsRequired()
+                        .HasMaxLength(21)
+                        .HasColumnType("character varying(21)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProximaGeracao");
+
+                    b.HasIndex("criador_id");
+
+                    b.HasIndex("organizacao_id");
+
+                    b.ToTable("recorrencias_evento", (string)null);
+
+                    b.HasDiscriminator<string>("tipo_recorrencia").HasValue("RecorrenciaEventoBase");
+
+                    b.UseTphMappingStrategy();
+                });
+
             modelBuilder.Entity("Convoquei.Core.Usuarios.Entidades.Usuario", b =>
                 {
                     b.Property<Guid>("Id")
@@ -416,6 +499,28 @@ namespace Convoquei.Infra.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("usuarios", (string)null);
+                });
+
+            modelBuilder.Entity("Convoquei.Core.RecorrenciasEvento.Entidades.RecorrenciaEventoDias", b =>
+                {
+                    b.HasBaseType("Convoquei.Core.Recorrencias.Entidades.RecorrenciaEventoBase");
+
+                    b.Property<int>("IntervaloDias")
+                        .HasColumnType("integer")
+                        .HasColumnName("intervalo_dias");
+
+                    b.HasDiscriminator().HasValue("dias");
+                });
+
+            modelBuilder.Entity("Convoquei.Core.RecorrenciasEvento.Entidades.RecorrenciaEventoSemanal", b =>
+                {
+                    b.HasBaseType("Convoquei.Core.Recorrencias.Entidades.RecorrenciaEventoBase");
+
+                    b.Property<int>("DiasRecorrenciaSemanaisFlag")
+                        .HasColumnType("integer")
+                        .HasColumnName("dias_recorrencia_flag");
+
+                    b.HasDiscriminator().HasValue("semanal");
                 });
 
             modelBuilder.Entity("Convoquei.Core.Assinaturas.Entidades.Assinatura", b =>
@@ -470,6 +575,10 @@ namespace Convoquei.Infra.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Convoquei.Core.Recorrencias.Entidades.RecorrenciaEventoBase", "Recorrencia")
+                        .WithMany()
+                        .HasForeignKey("recorrencia_id");
+
                     b.OwnsOne("Convoquei.Core.Eventos.ValueObjects.DadosCancelamentoEvento", "Cancelamento", b1 =>
                         {
                             b1.Property<Guid>("EventoId")
@@ -512,6 +621,8 @@ namespace Convoquei.Infra.Migrations
                     b.Navigation("Criador");
 
                     b.Navigation("Organizacao");
+
+                    b.Navigation("Recorrencia");
                 });
 
             modelBuilder.Entity("Convoquei.Core.Eventos.Entidades.ParticipanteEvento", b =>
@@ -593,6 +704,25 @@ namespace Convoquei.Infra.Migrations
                     b.Navigation("Usuario");
                 });
 
+            modelBuilder.Entity("Convoquei.Core.Recorrencias.Entidades.RecorrenciaEventoBase", b =>
+                {
+                    b.HasOne("Convoquei.Core.Usuarios.Entidades.Usuario", "Criador")
+                        .WithMany()
+                        .HasForeignKey("criador_id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Convoquei.Core.Organizacoes.Entidades.Organizacao", "Organizacao")
+                        .WithMany("Recorrencias")
+                        .HasForeignKey("organizacao_id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Criador");
+
+                    b.Navigation("Organizacao");
+                });
+
             modelBuilder.Entity("Convoquei.Core.Usuarios.Entidades.Usuario", b =>
                 {
                     b.OwnsOne("Convoquei.Core.Usuarios.ValueObjects.Email", "Email", b1 =>
@@ -668,6 +798,8 @@ namespace Convoquei.Infra.Migrations
                     b.Navigation("Eventos");
 
                     b.Navigation("Membros");
+
+                    b.Navigation("Recorrencias");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,11 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Convoquei.Core.Eventos.Entidades;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Convoquei.Infra.Eventos.Mapeamentos
 {
-    using Convoquei.Core.Eventos.Entidades;
-    using Microsoft.EntityFrameworkCore;
-    using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
     public class EventoMap : IEntityTypeConfiguration<Evento>
     {
         public void Configure(EntityTypeBuilder<Evento> builder)
@@ -59,6 +57,10 @@ namespace Convoquei.Infra.Eventos.Mapeamentos
                 .WithMany(o => o.Eventos)
                 .HasForeignKey("organizacao_id")
                 .IsRequired();
+
+            builder.HasOne(e => e.Recorrencia)
+                .WithMany()
+                .HasForeignKey("recorrencia_id");
 
             builder.OwnsOne(e => e.Cancelamento, cancelamento =>
             {

@@ -28,7 +28,7 @@ namespace Convoquei.Infra.Seguranca.Servicos
 
         public string GerarToken(Usuario usuario, int minutosExpiracao)
         {
-            var claims = new[]
+            var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, usuario.Id.ToString()),
                 new Claim(ClaimTypes.Email, usuario.Email.Endereco.ToString()),

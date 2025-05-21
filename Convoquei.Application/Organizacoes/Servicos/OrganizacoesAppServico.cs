@@ -82,7 +82,7 @@ namespace Convoquei.Application.Organizacoes.Servicos
 
                 return (OrganizacaoResponse)organizacao;
             }
-            catch(EntidadeNaoEncontradaExcecao<Organizacao>)
+            catch(EntidadeNaoEncontradaExcecao)
             {
                 return null;
             }

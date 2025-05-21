@@ -1,4 +1,6 @@
-﻿namespace Convoquei.Core.Usuarios.ValueObjects
+﻿using Convoquei.Core.Genericos.Excecoes;
+
+namespace Convoquei.Core.Usuarios.ValueObjects
 {
     public record Email
     {
@@ -7,9 +9,9 @@
         public Email(string endereco)
         {
             if (string.IsNullOrWhiteSpace(endereco))
-                throw new ArgumentException("O endereço de e-mail não pode ser nulo ou vazio.", nameof(endereco));
+                throw new AtributoInvalidoExcecao("O endereço de e-mail não pode ser nulo ou vazio.");
             if (!IsValidEmail(endereco))
-                throw new ArgumentException("O endereço de e-mail fornecido não é válido.", nameof(endereco));
+                throw new AtributoInvalidoExcecao("O endereço de e-mail fornecido não é válido.");
 
             Endereco = endereco.ToLowerInvariant();
         }

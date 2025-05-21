@@ -3,7 +3,9 @@ using Convoquei.Core.Eventos.Entidades;
 using Convoquei.Core.Genericos.Entidades;
 using Convoquei.Core.Genericos.Excecoes;
 using Convoquei.Core.Organizacoes.Enumeradores;
+using Convoquei.Core.Recorrencias.Entidades;
 using Convoquei.Core.Usuarios.Entidades;
+using System.Runtime.InteropServices.Marshalling;
 
 namespace Convoquei.Core.Organizacoes.Entidades
 {
@@ -12,9 +14,10 @@ namespace Convoquei.Core.Organizacoes.Entidades
         public string Nome { get; private set; }
         public bool ExigirAprovacaoDisponibilidade { get; private set; }
         public virtual Assinatura Assinatura { get; private set; }
-        public virtual HashSet<ConviteOrganizacao> Convites { get; private set; } = new();
+        public virtual IList<ConviteOrganizacao> Convites { get; private set; } = new List<ConviteOrganizacao>();
         public virtual HashSet<MembroOrganizacao> Membros { get; private set; } = new();
         public virtual IList<Evento> Eventos { get; private set; } = new List<Evento>();
+        public virtual IList<RecorrenciaEventoBase> Recorrencias { get; private set; } = new List<RecorrenciaEventoBase>();
 
         public MembroOrganizacao Lider => Membros.First(m => m.Cargo == CargoOrganizacaoEnum.Criador);
 
@@ -41,25 +44,53 @@ namespace Convoquei.Core.Organizacoes.Entidades
             Eventos.Add(evento);
         }
 
-        public void ConvidarUsuario(MembroOrganizacao membro, string email)
+        public ConviteOrganizacao ConvidarUsuario(MembroOrganizacao membro, string email)
         {
             if (!membro.PossuiPermissoesAdministrativas(this))
                 throw new RegraDeNegocioExcecao("É necessário possuir permissões administrativas na organização para convidar usuários.");
+            if(Convites.Any(c => c.Email.Endereco.Equals(email, StringComparison.OrdinalIgnoreCase)))
+                throw new RegraDeNegocioExcecao("Convite já enviado para o usuário, aguarde a confirmação.");
+            if (Membros.Any(m => m.Usuario.Email.Endereco.Equals(email, StringComparison.OrdinalIgnoreCase)))
+                throw new RegraDeNegocioExcecao("Já existe um membro na organizacao com esse e-mail.");
 
             ConviteOrganizacao convite = new(email, this, DateTime.UtcNow.AddDays(7), membro.Usuario);
             Convites.Add(convite);
+
+            return convite;
         }
 
-        public void AceitarConvite(Usuario usuario, ConviteOrganizacao convite)
+        public void AdicionarMembro(MembroOrganizacao membro)
         {
-            if(!usuario.Email.Equals(convite.Email))
-                throw new RegraDeNegocioExcecao("Convite não pertence ao usuário.");
-            if (convite.DataExpiracao < DateTime.UtcNow)
-                throw new RegraDeNegocioExcecao("Convite expirado.");
+            if (Membros.Any(m => m.Usuario.Equals(membro.Usuario)))
+                throw new RegraDeNegocioExcecao("Usuário já é membro da organização.");
 
-            MembroOrganizacao membro = new(usuario, this, CargoOrganizacaoEnum.Membro);
             Membros.Add(membro);
+        }
+
+        public void ExcluirConvite(MembroOrganizacao membroRemovendo, ConviteOrganizacao convite)
+        {
+            membroRemovendo.ValidarPermissoesAdministrativas();
+
             Convites.Remove(convite);
+        }
+
+        public MembroOrganizacao ValidarMembro(Usuario usuario)
+        {
+            MembroOrganizacao? membro = Membros.FirstOrDefault(m => m.Usuario.Equals(usuario));
+
+            if (membro == null)
+                throw new RegraDeNegocioExcecao("Usuário não é membro da organização.");
+
+            return membro;
+        }
+
+        public ConviteOrganizacao ValidarConvite(Guid id)
+        {
+            ConviteOrganizacao? convite = Convites.FirstOrDefault(c => c.Id == id);
+            if (convite == null)
+                throw new RegraDeNegocioExcecao("Convite não encontrado.");
+
+            return convite;
         }
     }
 }

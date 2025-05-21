@@ -32,7 +32,7 @@ namespace Convoquei.Core.Organizacoes.Servicos
         {
             Organizacao? organizacao = await _organizacoesRepositorio.RecuperarAsync(id, cancellationToken);
             if (organizacao is null)
-                throw new EntidadeNaoEncontradaExcecao<Organizacao>();
+                throw new EntidadeNaoEncontradaExcecao($"Não foi encontrada nenhuma organização!");
 
             return organizacao;
         }

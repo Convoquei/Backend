@@ -17,6 +17,9 @@ public class ConviteOrganizacaoMap : IEntityTypeConfiguration<ConviteOrganizacao
             .HasColumnName("data_expiracao")
             .IsRequired();
 
+        builder.Property(c => c.UltimoReenvio)
+            .HasColumnName("ultimo_reenvio");
+
         builder.OwnsOne(c => c.Email, email =>
         {
             email.Property(e => e.Endereco)

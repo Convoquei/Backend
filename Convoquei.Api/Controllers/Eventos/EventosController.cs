@@ -56,7 +56,7 @@ namespace Convoquei.Api.Controllers.Eventos
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        [HttpPost]
+        [HttpPatch]
         [Route("{idEvento:guid}/disponibilidades")]
         public async Task<IActionResult> InformarDisponibilidadeAsync([FromRoute] Guid idOrganizacao, [FromRoute] Guid idEvento, CancellationToken cancellationToken)
         {
@@ -81,7 +81,7 @@ namespace Convoquei.Api.Controllers.Eventos
         /// <param name="id"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        [HttpPatch]
+        [HttpPost]
         [Route("{idEvento:guid}/escala/{idUsuario:guid}/status")]
         public async Task<IActionResult> ModificarEscalaAsync([FromRoute] Guid idOrganizacao, [FromRoute] Guid idEvento, CancellationToken cancellationToken)
         {
