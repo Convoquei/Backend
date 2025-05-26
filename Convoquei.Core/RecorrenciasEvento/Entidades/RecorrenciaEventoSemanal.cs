@@ -4,6 +4,7 @@ using Convoquei.Core.Genericos.Excecoes;
 using Convoquei.Core.Organizacoes.Entidades;
 using Convoquei.Core.Recorrencias.Entidades;
 using Convoquei.Core.RecorrenciasEvento.Enumeradores;
+using Convoquei.Core.RecorrenciasEvento.Extensoes;
 using Convoquei.Core.Usuarios.Entidades;
 
 namespace Convoquei.Core.RecorrenciasEvento.Entidades
@@ -11,39 +12,58 @@ namespace Convoquei.Core.RecorrenciasEvento.Entidades
     public class RecorrenciaEventoSemanal : RecorrenciaEventoBase
     {
         public DiasEventoEnumFlag DiasRecorrenciaSemanaisFlag { get; private set; }
-        public override DateTime PrevisaoProximaGeracao { get 
-            { 
-                int diasAntecedenciaCriarEventos = Organizacao.AntecedenciaDiasCriarEventosRecorrentes;
+        public TimeSpan HorarioInicio { get; private set; }
 
-                DateTime projecaoProximaData = UltimaGeracao.HasValue ?
-                    UltimaGeracao.Value.AddDays(diasAntecedenciaCriarEventos).Date
-                    : DataHoraInicio.AddDays(-diasAntecedenciaCriarEventos).Date;
-
-                return projecaoProximaData;
-            } 
-        }
-
-        protected RecorrenciaEventoSemanal()
-        {
-
-        }
-
-        public RecorrenciaEventoSemanal(string nome, string local, string descricao, DateTime dataHoraInicio, TimeSpan fechamentoEscalaAntecedencia, Usuario criador, Organizacao organizacao, DiasEventoEnumFlag diasEventoEnumFlag) : base(nome, local, descricao, dataHoraInicio, fechamentoEscalaAntecedencia, criador, organizacao)
+        public RecorrenciaEventoSemanal(string nome, string local, string descricao, TimeSpan horarioInicio, TimeSpan fechamentoEscalaAntecedencia, Usuario criador, Organizacao organizacao, DiasEventoEnumFlag diasEventoEnumFlag) : base(nome, local, descricao, fechamentoEscalaAntecedencia, criador, organizacao)
         {
             if (diasEventoEnumFlag == DiasEventoEnumFlag.Nenhum)
                 throw new RegraDeNegocioExcecao("É necessário informar ao menos um dia para criar uma recorrencia semanal.");
 
             DiasRecorrenciaSemanaisFlag = diasEventoEnumFlag;
-
-            ExecutarRecorrencia();
+            HorarioInicio = horarioInicio;
         }
+
+        protected RecorrenciaEventoSemanal() { }
 
         public override TipoEventoEnum Tipo => TipoEventoEnum.Semanal;
         public override string DescricaoRecorrencia => $"Todo {GerarDiasSemanaFormatado()}";
 
-        protected override IEnumerable<Evento> GerarEventos()
+        public override IEnumerable<Evento> GerarEventos()
         {
-            return Enumerable.Empty<Evento>();
+            int diasAntecedencia = Organizacao.AntecedenciaDiasCriarEventosRecorrentes;
+            DateTime hoje = DateTime.UtcNow;
+            DateTime dataFinal = hoje.AddDays(diasAntecedencia);
+
+            HashSet<DateTime> datasEventosExistentes = ObterDatasEventosExistentes();
+
+            IList<Evento> eventos = new List<Evento>();
+
+            foreach(DateTime data in GerarProjecoesSemanais(hoje, dataFinal, DiasRecorrenciaSemanaisFlag, HorarioInicio))
+            {
+                if(!datasEventosExistentes.Contains(data))
+                {
+                    eventos.Add(new Evento(this, data));
+                }
+            }
+
+            return eventos;
+        }
+
+        private static IEnumerable<DateTime> GerarProjecoesSemanais(DateTime inicio, DateTime limite, DiasEventoEnumFlag dias, TimeSpan horario)
+        {
+            IEnumerable<DayOfWeek> diasSemana = dias.ObterDiasSemana();
+
+            DateTime data = inicio.Date;
+
+            while (data <= limite)
+            {
+                if (diasSemana.Contains(data.DayOfWeek))
+                {
+                    yield return data.Add(horario);
+                }
+
+                data = data.AddDays(1);
+            }
         }
 
         private string GerarDiasSemanaFormatado()

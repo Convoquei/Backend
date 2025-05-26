@@ -59,5 +59,28 @@ namespace Convoquei.Application.RecorrenciasEvento.Servicos
 
         private static CriarRecorrenciaEventoComando GerarComandoCriarRecorrencia(Organizacao organizacao, Usuario usuario, CriarRecorrenciaRequest request)
             => new(request.Nome, request.Local, request.Descricao, request.DataHoraInicio, TimeSpan.FromHours(request.HorasFechamentoEscalaAntecedencia), usuario, organizacao, (TipoEventoEnum)request.TipoEvento, request.IntervaloDias, (DiasEventoEnumFlag)(request.DiasSemanaBitmap ?? 0));
+
+        public async Task GerarEventosRecorrenciaAsync(Guid idOrganizacao, Guid idRecorrencia, CancellationToken cancellationToken)
+        {
+            try
+            {
+                Organizacao organizacao = await _organizacoesServico.ValidarAsync(idOrganizacao, cancellationToken);
+
+                await _unitOfWork.BeginTransactionAsync();
+
+                organizacao.ProcessarRecorrencia(idRecorrencia);
+
+                await _unitOfWork.CommitAsync();
+
+                //RecorrenciaEventoBase recorrencia = organizacao.ValidarRecorrencia(idRecorrencia);
+
+                //recorrencia.Teste();
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "GerarEventosRecorrenciaAsync", idRecorrencia);
+                throw;
+            }
+        }
     }
 }

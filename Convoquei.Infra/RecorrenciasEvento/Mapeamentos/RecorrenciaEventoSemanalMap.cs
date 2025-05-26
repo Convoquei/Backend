@@ -11,6 +11,10 @@ namespace Convoquei.Infra.RecorrenciasEvento.Mapeamentos
             builder.Property(r => r.DiasRecorrenciaSemanaisFlag)
                 .HasColumnName("dias_recorrencia_flag")
                 .IsRequired();
+
+            builder.Property(r => r.HorarioInicio)
+                .HasColumnName("horario_inicio")
+                .IsRequired();
         }
     }
 }

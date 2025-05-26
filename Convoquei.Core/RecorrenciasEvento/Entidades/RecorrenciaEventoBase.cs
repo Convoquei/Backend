@@ -12,39 +12,37 @@ namespace Convoquei.Core.Recorrencias.Entidades
         public string Nome { get; private set; }
         public string Local { get; private set; }
         public string Descricao { get; private set; }
-        public DateTime DataHoraInicio { get; private set; }
         public TimeSpan FechamentoEscalaAntecedencia { get; private set; }
         public virtual Usuario Criador { get; private set; }
         public virtual Organizacao Organizacao { get; private set; }
-        public DateTime? UltimaGeracao { get; private set; }
+        public DateTime? DataUltimoEventoGerado { get; private set; }
+        public DateTime? PrevisaoProximaGeracao { get; protected set; }
 
         protected RecorrenciaEventoBase() { }
 
-        protected RecorrenciaEventoBase(string nome, string local, string descricao, DateTime dataHoraInicio, TimeSpan fechamentoEscalaAntecedencia, Usuario criador, Organizacao organizacao)
+        protected RecorrenciaEventoBase(string nome, string local, string descricao, TimeSpan fechamentoEscalaAntecedencia, Usuario criador, Organizacao organizacao)
         {
             Nome = nome;
             Local = local;
             Descricao = descricao;
-            DataHoraInicio = dataHoraInicio;
             FechamentoEscalaAntecedencia = fechamentoEscalaAntecedencia;
             Criador = criador;
             Organizacao = organizacao;
-            UltimaGeracao = null;
+            DataUltimoEventoGerado = null;
         }
 
-        public void ExecutarRecorrencia()
+        protected HashSet<DateTime> ObterDatasEventosExistentes()
         {
-            if (PrevisaoProximaGeracao > DateTime.UtcNow.Date)
-                return;
+            HashSet<DateTime> datasEventosExistentes = Organizacao.Eventos
+                .Where(e => e.Recorrencia == this)
+                .Select(e => e.DataHoraInicio)
+                .ToHashSet();
 
-            GerarEventos();
-
-            UltimaGeracao = DateTime.UtcNow.Date;
+            return datasEventosExistentes;
         }
 
-        public abstract DateTime PrevisaoProximaGeracao { get; }
         public abstract string DescricaoRecorrencia { get; }
         public abstract TipoEventoEnum Tipo { get; }
-        protected abstract IEnumerable<Evento> GerarEventos();
+        public abstract IEnumerable<Evento> GerarEventos();
     }
 }

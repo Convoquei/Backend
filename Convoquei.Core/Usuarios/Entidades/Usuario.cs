@@ -9,6 +9,7 @@ namespace Convoquei.Core.Usuarios.Entidades
         public string Senha { get; private set; }
         public Email Email { get; private set; }
         public Token? Token { get; private set; }
+        public int CodigoSeguranca => HashCode.Combine(Id, Email, Senha);
 
         public Usuario(string nome, string senha, Email email)
         {
@@ -28,6 +29,11 @@ namespace Convoquei.Core.Usuarios.Entidades
         public static implicit operator string(Usuario usuario)
         {
             return usuario.Nome;
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
         }
     }
 }

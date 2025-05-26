@@ -6,5 +6,6 @@ namespace Convoquei.Application.RecorrenciasEvento.Servicos.Interfaces
     public interface IRecorrenciasEventoAppServico
     {
         Task<RecorrenciaEventoResponse> CriarRecorrenciaAsync(Guid idOrganizacao, CriarRecorrenciaRequest request, CancellationToken cancellationToken);
+        Task GerarEventosRecorrenciaAsync(Guid idOrganizacao, Guid idRecorrencia, CancellationToken cancellationToken);
     }
 }

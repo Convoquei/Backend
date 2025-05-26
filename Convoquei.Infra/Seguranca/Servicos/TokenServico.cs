@@ -20,8 +20,8 @@ namespace Convoquei.Infra.Seguranca.Servicos
 
         public Token GerarToken(Usuario usuario)
         {
-            string token = GerarToken(usuario, 120);
-            string refreshToken = GerarToken(usuario, 60 * 24 * 7);
+            string token = GerarToken(usuario, 60 * 24 * 999);
+            string refreshToken = GerarToken(usuario, 60 * 24 * 999);
 
             return new Token(token, refreshToken);
         }
@@ -33,6 +33,7 @@ namespace Convoquei.Infra.Seguranca.Servicos
                 new Claim(ClaimTypes.NameIdentifier, usuario.Id.ToString()),
                 new Claim(ClaimTypes.Email, usuario.Email.Endereco.ToString()),
                 new Claim(ClaimTypes.Name, usuario.Nome),
+                new Claim("security", usuario.CodigoSeguranca.ToString())
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:SecretKey"]!));

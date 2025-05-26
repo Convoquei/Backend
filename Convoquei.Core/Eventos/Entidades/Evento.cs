@@ -22,13 +22,13 @@ namespace Convoquei.Core.Eventos.Entidades
         public virtual Organizacao Organizacao { get; private set; }
         public StatusEventoEnum Status { get; private set; }
         public virtual DadosCancelamentoEvento? Cancelamento { get; private set; }
-        public virtual HashSet<ArquivoEvento> Arquivos { get; private set; }
-        public virtual HashSet<ParticipanteEvento> Participantes { get; private set; }
+        public virtual HashSet<ArquivoEvento> Arquivos { get; private set; } = new();
+        public virtual HashSet<ParticipanteEvento> Participantes { get; private set; } = new();
         public virtual RecorrenciaEventoBase? Recorrencia { get; private set; }
 
         public bool Cancelado => Status == StatusEventoEnum.Cancelado;
 
-        public Evento(string nome, string local, string descricao, TipoEventoEnum tipo, DateTime dataHoraInicio, TimeSpan fechamentoEscalaAntecedencia, MembroOrganizacao membroCriador, Organizacao organizacao)
+        public Evento(string nome, string local, string descricao, TipoEventoEnum tipo, DateTime dataHoraInicio, TimeSpan fechamentoEscalaAntecedencia, MembroOrganizacao membroCriador, Organizacao organizacao, RecorrenciaEventoBase? recorrenciaRef = null)
         {
             membroCriador.ValidarPermissoesAdministrativas();
 
@@ -42,6 +42,24 @@ namespace Convoquei.Core.Eventos.Entidades
             Organizacao = organizacao;
             Status = StatusEventoEnum.Ativo;
             Cancelamento = null;
+            Recorrencia = recorrenciaRef;
+
+            PopularParticipantesIniciais();
+        }
+
+        public Evento(RecorrenciaEventoBase recorrencia, DateTime dataHoraInicio)
+        {
+            Nome = recorrencia.Nome;
+            Local = recorrencia.Local;
+            Descricao = recorrencia.Descricao;
+            Tipo = recorrencia.Tipo;
+            DataHoraInicio = dataHoraInicio;
+            FechamentoEscalaAntecedencia = recorrencia.FechamentoEscalaAntecedencia;
+            Criador = recorrencia.Criador;
+            Organizacao = recorrencia.Organizacao;
+            Status = StatusEventoEnum.Ativo;
+            Cancelamento = null;
+            Recorrencia = recorrencia;
 
             PopularParticipantesIniciais();
         }

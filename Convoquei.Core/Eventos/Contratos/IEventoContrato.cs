@@ -9,7 +9,6 @@ namespace Convoquei.Core.Eventos.Contratos
         string Nome { get; }
         string Local { get; }
         string Descricao { get; }
-        DateTime DataHoraInicio { get; }
         TimeSpan FechamentoEscalaAntecedencia { get; }
         Usuario Criador { get; }
         Organizacao Organizacao { get; }

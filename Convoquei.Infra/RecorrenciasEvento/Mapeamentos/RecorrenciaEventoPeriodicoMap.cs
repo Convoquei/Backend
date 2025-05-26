@@ -11,6 +11,10 @@ namespace Convoquei.Infra.RecorrenciasEvento.Mapeamentos
             builder.Property(r => r.IntervaloDias)
                 .HasColumnName("intervalo_dias")
                 .IsRequired();
+
+            builder.Property(r => r.PrimeiraOcorrencia)
+                .HasColumnName("primeira_ocorrencia")
+                .IsRequired();
         }
     }
 }

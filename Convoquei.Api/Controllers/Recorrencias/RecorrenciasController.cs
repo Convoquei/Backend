@@ -74,5 +74,13 @@ namespace Convoquei.Api.Controllers.Recorrencias
         {
             return Ok();
         }
+
+        [HttpPost]
+        [Route("{idRecorrencia:guid}/geracoes-eventos")]
+        public async Task<IActionResult> GerarEventosAsync([FromRoute] Guid idOrganizacao, [FromRoute] Guid idRecorrencia, CancellationToken cancellationToken)
+        {
+            await _recorrenciasEventoAppServico.GerarEventosRecorrenciaAsync(idOrganizacao, idRecorrencia, cancellationToken);
+            return Ok();
+        }
     }
 }

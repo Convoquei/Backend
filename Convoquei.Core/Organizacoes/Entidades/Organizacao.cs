@@ -8,7 +8,7 @@ using Convoquei.Core.Usuarios.Entidades;
 
 namespace Convoquei.Core.Organizacoes.Entidades
 {
-    public  class Organizacao : EntidadeBase
+    public class Organizacao : EntidadeBase
     {
         public string Nome { get; private set; }
         public bool ExigirAprovacaoDisponibilidade { get; private set; }
@@ -16,7 +16,7 @@ namespace Convoquei.Core.Organizacoes.Entidades
         public virtual Assinatura Assinatura { get; private set; }
         public virtual IList<ConviteOrganizacao> Convites { get; private set; } = new List<ConviteOrganizacao>();
         public virtual HashSet<MembroOrganizacao> Membros { get; private set; } = new();
-        public virtual IList<Evento> Eventos { get; private set; } = new List<Evento>();
+        public virtual List<Evento> Eventos { get; private set; } = new List<Evento>();
         public virtual IList<RecorrenciaEventoBase> Recorrencias { get; private set; } = new List<RecorrenciaEventoBase>();
 
         public MembroOrganizacao Lider => Membros.First(m => m.Cargo == CargoOrganizacaoEnum.Criador);
@@ -34,14 +34,14 @@ namespace Convoquei.Core.Organizacoes.Entidades
 
         protected Organizacao()
         {
-            
+
         }
 
         public void AdicionarEvento(Evento evento)
         {
             if (Eventos.Any(e => e.Id == evento.Id))
                 throw new RegraDeNegocioExcecao("Evento já cadastrado na organização.");
-            if(Assinatura.Plano.LimiteEventosMensais >= ContarEventosCriadosMesCorrente())
+            if (Assinatura.Plano.LimiteEventosMensais >= ContarEventosCriadosMesCorrente())
                 throw new RegraDeNegocioExcecao("Limite de eventos mensais atingido, faça upgrade na assinatura para criar mais eventos.");
 
             Eventos.Add(evento);
@@ -51,7 +51,7 @@ namespace Convoquei.Core.Organizacoes.Entidades
         {
             if (!membro.PossuiPermissoesAdministrativas(this))
                 throw new RegraDeNegocioExcecao("É necessário possuir permissões administrativas na organização para convidar usuários.");
-            if(Convites.Any(c => c.Email.Endereco.Equals(email, StringComparison.OrdinalIgnoreCase)))
+            if (Convites.Any(c => c.Email.Endereco.Equals(email, StringComparison.OrdinalIgnoreCase)))
                 throw new RegraDeNegocioExcecao("Convite já enviado para o usuário, aguarde a confirmação.");
             if (Membros.Any(m => m.Usuario.Email.Endereco.Equals(email, StringComparison.OrdinalIgnoreCase)))
                 throw new RegraDeNegocioExcecao("Já existe um membro na organizacao com esse e-mail.");
@@ -87,6 +87,15 @@ namespace Convoquei.Core.Organizacoes.Entidades
             return membro;
         }
 
+        public RecorrenciaEventoBase ValidarRecorrencia(Guid id)
+        {
+            RecorrenciaEventoBase? recorrencia = Recorrencias.FirstOrDefault(r => r.Id == id);
+            if (recorrencia == null)
+                throw new RegraDeNegocioExcecao("Recorrência não encontrada.");
+
+            return recorrencia;
+        }
+
         public ConviteOrganizacao ValidarConvite(Guid id)
         {
             ConviteOrganizacao? convite = Convites.FirstOrDefault(c => c.Id == id);
@@ -114,5 +123,26 @@ namespace Convoquei.Core.Organizacoes.Entidades
                 e.DataCriacao < primeiroDiaMesSeguinte);
         }
 
+        public void ProcessarRecorrencias()
+        {
+            foreach (RecorrenciaEventoBase recorrencia in Recorrencias)
+            {
+                ProcessarRecorrencia(recorrencia);
+            }
+        }
+
+        public void ProcessarRecorrencia(Guid id)
+        {
+            RecorrenciaEventoBase recorrencia = ValidarRecorrencia(id);
+
+            ProcessarRecorrencia(recorrencia);
+        }
+
+        private void ProcessarRecorrencia(RecorrenciaEventoBase recorrencia)
+        {
+            IEnumerable<Evento> eventos = recorrencia.GerarEventos();
+
+            Eventos.AddRange(eventos);
+        }
     }
 }

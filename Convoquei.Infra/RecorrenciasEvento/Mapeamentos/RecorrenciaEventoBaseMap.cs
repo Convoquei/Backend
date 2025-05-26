@@ -30,16 +30,16 @@ namespace Convoquei.Infra.RecorrenciasEvento.Mapeamentos
                 .HasColumnName("descricao")
                 .HasMaxLength(500);
 
-            builder.Property(r => r.DataHoraInicio)
-                .HasColumnName("data_hora_inicio")
-                .IsRequired();
-
             builder.Property(r => r.FechamentoEscalaAntecedencia)
                 .HasColumnName("fechamento_escala_antecedencia")
                 .IsRequired();
 
-            builder.Property(r => r.UltimaGeracao)
-                .HasColumnName("data_ultima_geracao");
+            builder.Property(r => r.PrevisaoProximaGeracao)
+                .HasColumnName("previsao_proxima_geracao");
+                //.IsRequired();
+
+            builder.Property(r => r.DataUltimoEventoGerado)
+                .HasColumnName("data_ultimo_evento_gerado");
 
             builder.HasOne(r => r.Criador)
                 .WithMany()
@@ -56,7 +56,7 @@ namespace Convoquei.Infra.RecorrenciasEvento.Mapeamentos
                 .HasValue<RecorrenciaEventoPeriodico>("dias");
 
             builder.Ignore(c => c.Tipo);
-            builder.HasIndex(r => r.UltimaGeracao);
+            builder.HasIndex(r => r.DataUltimoEventoGerado);
         }
     }
 }

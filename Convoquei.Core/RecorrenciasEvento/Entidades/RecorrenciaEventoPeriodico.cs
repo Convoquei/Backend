@@ -10,38 +10,70 @@ namespace Convoquei.Core.RecorrenciasEvento.Entidades
     public class RecorrenciaEventoPeriodico : RecorrenciaEventoBase
     {
         public int IntervaloDias { get; private set; }
+        public DateTime PrimeiraOcorrencia { get; private set; }
         public override TipoEventoEnum Tipo => TipoEventoEnum.IntervaloDias;
-        public override string DescricaoRecorrencia => $"A cada {IntervaloDias} dias a partir de {DataHoraInicio:dd/MM/yyyy}";
-        public override DateTime PrevisaoProximaGeracao { get 
-            {
-                int diasAntecedenciaCriarEventos = Organizacao.AntecedenciaDiasCriarEventosRecorrentes;
+        public override string DescricaoRecorrencia => $"A cada {IntervaloDias} dias a partir de {PrimeiraOcorrencia:dd/MM/yyyy}";
 
-                DateTime projecaoProximaGeracao = UltimaGeracao.HasValue ?
-                    UltimaGeracao.Value.AddDays(IntervaloDias).Date
-                    : DataHoraInicio.AddDays(-diasAntecedenciaCriarEventos).Date;
+        protected RecorrenciaEventoPeriodico() { }
 
-                return projecaoProximaGeracao;
-            } 
-        }
-
-        public RecorrenciaEventoPeriodico(string nome, string local, string descricao, DateTime dataHoraInicio, TimeSpan fechamentoEscalaAntecedencia, Usuario criador, Organizacao organizacao, int intervaloDias) : base(nome, local, descricao, dataHoraInicio, fechamentoEscalaAntecedencia, criador, organizacao)
+        public RecorrenciaEventoPeriodico(
+            string nome,
+            string local,
+            string descricao,
+            DateTime dataPrimeiraOcorrencia,
+            TimeSpan fechamentoEscalaAntecedencia,
+            Usuario criador,
+            Organizacao organizacao,
+            int intervaloDias
+        ) : base(nome, local, descricao, fechamentoEscalaAntecedencia, criador, organizacao)
         {
             if (intervaloDias < 3)
                 throw new RegraDeNegocioExcecao("O intervalo de dias deve ser maior ou igual a 3 dias.");
+            if (dataPrimeiraOcorrencia <= DateTime.UtcNow.AddHours(6))
+                throw new RegraDeNegocioExcecao("A primeira ocorrência do evento deve ter pelo menos 6 horas de antecedência.");
 
             IntervaloDias = intervaloDias;
-
-            ExecutarRecorrencia();
+            PrimeiraOcorrencia = dataPrimeiraOcorrencia;
+            PrevisaoProximaGeracao = PrimeiraOcorrencia.AddDays(-Organizacao.AntecedenciaDiasCriarEventosRecorrentes);
         }
 
-        protected RecorrenciaEventoPeriodico()
+        public override IEnumerable<Evento> GerarEventos()
         {
-            
+            int diasAntecedencia = Organizacao.AntecedenciaDiasCriarEventosRecorrentes;
+            DateTime hoje = DateTime.UtcNow;
+
+            DateTime proximaOcorrenciaInicial = ObterProximaOcorrenciaAPartirDeHoje(PrimeiraOcorrencia, IntervaloDias, hoje);
+            DateTime dataFinal = hoje.AddDays(diasAntecedencia);
+
+            HashSet<DateTime> datasEventosExistentes = ObterDatasEventosExistentes();
+
+            var eventos = new List<Evento>();
+
+            DateTime dataCorrente = proximaOcorrenciaInicial;
+
+            while (dataCorrente <= dataFinal)
+            {
+                if (!datasEventosExistentes.Contains(dataCorrente))
+                {
+                    eventos.Add(new Evento(this, dataCorrente));
+                }
+
+                dataCorrente = dataCorrente.AddDays(IntervaloDias);
+            }
+
+            return eventos;
         }
 
-        protected override IEnumerable<Evento> GerarEventos()
+        private static DateTime ObterProximaOcorrenciaAPartirDeHoje(DateTime primeiraOcorrencia, int intervaloDias, DateTime hoje)
         {
-            return Enumerable.Empty<Evento>();
+            if (primeiraOcorrencia >= hoje)
+                return primeiraOcorrencia;
+
+            int diasDiferenca = (hoje.Date - primeiraOcorrencia.Date).Days;
+            int saltos = (int)Math.Ceiling(diasDiferenca / (double)intervaloDias);
+
+            return primeiraOcorrencia.AddDays(saltos * intervaloDias);
         }
     }
+
 }

@@ -51,7 +51,7 @@ namespace Convoquei.Core.RecorrenciasEvento.Servicos
                 comando.Nome,
                 comando.Local,
                 comando.Descricao,
-                comando.DataHoraInicio,
+                comando.DataHoraInicio.TimeOfDay,
                 comando.FechamentoEscalaAntecedencia,
                 comando.Criador,
                 comando.Organizacao,
