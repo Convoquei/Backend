@@ -1,6 +1,7 @@
 ﻿using Convoquei.Application.Autenticacao;
 using Convoquei.Application.Genericos.Extensoes;
 using Convoquei.Application.RecorrenciasEvento.Servicos.Interfaces;
+using Convoquei.Core.Eventos.Entidades;
 using Convoquei.Core.Eventos.Enumeradores;
 using Convoquei.Core.Genericos.UoW;
 using Convoquei.Core.Organizacoes.Entidades;
@@ -10,6 +11,7 @@ using Convoquei.Core.RecorrenciasEvento.Enumeradores;
 using Convoquei.Core.RecorrenciasEvento.Servicos.Comandos;
 using Convoquei.Core.RecorrenciasEvento.Servicos.Interfaces;
 using Convoquei.Core.Usuarios.Entidades;
+using Convoquei.DataTransfer.Genericos.Responses;
 using Convoquei.DataTransfer.RecorrenciasEvento.Requests;
 using Convoquei.DataTransfer.RecorrenciasEvento.Responses;
 using Microsoft.Extensions.Logging;
@@ -60,7 +62,7 @@ namespace Convoquei.Application.RecorrenciasEvento.Servicos
         private static CriarRecorrenciaEventoComando GerarComandoCriarRecorrencia(Organizacao organizacao, Usuario usuario, CriarRecorrenciaRequest request)
             => new(request.Nome, request.Local, request.Descricao, request.DataHoraInicio, TimeSpan.FromHours(request.HorasFechamentoEscalaAntecedencia), usuario, organizacao, (TipoEventoEnum)request.TipoEvento, request.IntervaloDias, (DiasEventoEnumFlag)(request.DiasSemanaBitmap ?? 0));
 
-        public async Task GerarEventosRecorrenciaAsync(Guid idOrganizacao, Guid idRecorrencia, CancellationToken cancellationToken)
+        public async Task<int> GerarEventosRecorrenciaAsync(Guid idOrganizacao, Guid idRecorrencia, CancellationToken cancellationToken)
         {
             try
             {
@@ -68,19 +70,44 @@ namespace Convoquei.Application.RecorrenciasEvento.Servicos
 
                 await _unitOfWork.BeginTransactionAsync();
 
-                organizacao.ProcessarRecorrencia(idRecorrencia);
+                IEnumerable<Evento> eventosGerados = organizacao.ProcessarRecorrencia(idRecorrencia);
 
                 await _unitOfWork.CommitAsync();
 
-                //RecorrenciaEventoBase recorrencia = organizacao.ValidarRecorrencia(idRecorrencia);
-
-                //recorrencia.Teste();
+                return eventosGerados.Count();
             }
             catch(Exception ex)
             {
                 _logger.LogError(ex, "GerarEventosRecorrenciaAsync", idRecorrencia);
                 throw;
             }
+        }
+
+        public Task<PaginacaoResponse<RecorrenciaEventoResponse>> ListarAsync(Guid idOrganizacao, int pagina, int tamanhoPagina, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<RecorrenciaEventoResponse> RecuperarAsync(Guid idOrganizacao, Guid idRecorrencia, CancellationToken cancellationToken)
+        {
+            try
+            {
+                Organizacao organizacao = await _organizacoesServico.ValidarAsync(idOrganizacao, cancellationToken);
+
+                RecorrenciaEventoBase recorrencia = organizacao.ValidarRecorrencia(idRecorrencia);
+
+                return (RecorrenciaEventoResponse)recorrencia;
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "RecuperarAsync", idRecorrencia);
+                throw;
+            }
+        }
+
+        public Task DeletarAsync(Guid idOrganizacao, Guid idRecorrencia, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
         }
     }
 }

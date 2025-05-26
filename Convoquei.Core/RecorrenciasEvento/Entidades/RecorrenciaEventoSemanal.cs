@@ -26,7 +26,7 @@ namespace Convoquei.Core.RecorrenciasEvento.Entidades
         protected RecorrenciaEventoSemanal() { }
 
         public override TipoEventoEnum Tipo => TipoEventoEnum.Semanal;
-        public override string DescricaoRecorrencia => $"Todo {GerarDiasSemanaFormatado()}";
+        public override string DescricaoRecorrencia => GerarDiasSemanaFormatado();
 
         public override IEnumerable<Evento> GerarEventos()
         {
@@ -68,12 +68,18 @@ namespace Convoquei.Core.RecorrenciasEvento.Entidades
 
         private string GerarDiasSemanaFormatado()
         {
-            var dias = DiasRecorrenciaSemanaisFlag.ToString().Split(",").Select(dia => dia.Trim()).ToList();
+            IList<string> dias = DiasRecorrenciaSemanaisFlag.ObterDiasSemana()
+                .Select(d => d.ToString())
+                .ToList();
+
             if (dias.Count == 1)
                 return dias.First();
-            var ultimoDia = dias.Last();
+
+            string ultimoDia = dias.Last();
             dias.RemoveAt(dias.Count - 1);
+
             return $"{string.Join(", ", dias)} e {ultimoDia}";
         }
+
     }
 }

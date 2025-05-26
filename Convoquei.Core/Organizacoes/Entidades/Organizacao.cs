@@ -123,26 +123,31 @@ namespace Convoquei.Core.Organizacoes.Entidades
                 e.DataCriacao < primeiroDiaMesSeguinte);
         }
 
-        public void ProcessarRecorrencias()
+        public IEnumerable<Evento> ProcessarRecorrencias()
         {
             foreach (RecorrenciaEventoBase recorrencia in Recorrencias)
             {
-                ProcessarRecorrencia(recorrencia);
+                foreach (Evento evento in ProcessarRecorrencia(recorrencia))
+                {
+                    yield return evento;
+                }
             }
         }
 
-        public void ProcessarRecorrencia(Guid id)
+        public IEnumerable<Evento> ProcessarRecorrencia(Guid id)
         {
             RecorrenciaEventoBase recorrencia = ValidarRecorrencia(id);
 
-            ProcessarRecorrencia(recorrencia);
+            return ProcessarRecorrencia(recorrencia);
         }
 
-        private void ProcessarRecorrencia(RecorrenciaEventoBase recorrencia)
+        private IEnumerable<Evento> ProcessarRecorrencia(RecorrenciaEventoBase recorrencia)
         {
             IEnumerable<Evento> eventos = recorrencia.GerarEventos();
 
             Eventos.AddRange(eventos);
+
+            return eventos;
         }
     }
 }

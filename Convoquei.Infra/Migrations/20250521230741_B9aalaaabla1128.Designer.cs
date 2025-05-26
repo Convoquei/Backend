@@ -440,10 +440,6 @@ namespace Convoquei.Infra.Migrations
                         .HasColumnType("character varying(200)")
                         .HasColumnName("nome");
 
-                    b.Property<DateTime>("PrevisaoProximaGeracao")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("previsao_proxima_geracao");
-
                     b.Property<Guid>("criador_id")
                         .HasColumnType("uuid");
 

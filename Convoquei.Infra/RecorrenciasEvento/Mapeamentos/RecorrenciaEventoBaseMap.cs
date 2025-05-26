@@ -34,10 +34,6 @@ namespace Convoquei.Infra.RecorrenciasEvento.Mapeamentos
                 .HasColumnName("fechamento_escala_antecedencia")
                 .IsRequired();
 
-            builder.Property(r => r.PrevisaoProximaGeracao)
-                .HasColumnName("previsao_proxima_geracao");
-                //.IsRequired();
-
             builder.Property(r => r.DataUltimoEventoGerado)
                 .HasColumnName("data_ultimo_evento_gerado");
 

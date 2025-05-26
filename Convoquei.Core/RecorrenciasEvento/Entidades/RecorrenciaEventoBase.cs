@@ -16,7 +16,6 @@ namespace Convoquei.Core.Recorrencias.Entidades
         public virtual Usuario Criador { get; private set; }
         public virtual Organizacao Organizacao { get; private set; }
         public DateTime? DataUltimoEventoGerado { get; private set; }
-        public DateTime? PrevisaoProximaGeracao { get; protected set; }
 
         protected RecorrenciaEventoBase() { }
 

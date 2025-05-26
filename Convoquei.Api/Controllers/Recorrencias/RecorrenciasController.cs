@@ -1,5 +1,6 @@
 ﻿using Convoquei.Api.Responses;
 using Convoquei.Application.RecorrenciasEvento.Servicos.Interfaces;
+using Convoquei.DataTransfer.Genericos.Responses;
 using Convoquei.DataTransfer.RecorrenciasEvento.Requests;
 using Convoquei.DataTransfer.RecorrenciasEvento.Responses;
 using Microsoft.AspNetCore.Authorization;
@@ -28,27 +29,32 @@ namespace Convoquei.Api.Controllers.Recorrencias
         /// <returns></returns>
         [HttpGet]
         [Route("{idRecorrencia:guid}")]
-        public async Task<IActionResult> RecuperarAsync([FromRoute] Guid idOrganizacao, [FromRoute] Guid idRecorrencia, CancellationToken cancellationToken)
+        public async Task<ActionResult<ApiResponse<RecorrenciaEventoResponse>>> RecuperarAsync([FromRoute] Guid idOrganizacao, [FromRoute] Guid idRecorrencia, CancellationToken cancellationToken)
         {
-            return Ok();
+            RecorrenciaEventoResponse recorrencia = await _recorrenciasEventoAppServico.RecuperarAsync(idOrganizacao, idRecorrencia, cancellationToken);
+
+            return Ok(ApiResponse<RecorrenciaEventoResponse>.Ok(recorrencia));
         }
 
         /// <summary>
         /// Listar todas as recorrencias de eventos da organização
         /// </summary>
+        /// <param name="idOrganizacao">ID da organização</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> ListarAsync([FromRoute] Guid idOrganizacao, CancellationToken cancellationToken)
+        public async Task<ActionResult<ApiResponse<PaginacaoResponse<RecorrenciaEventoResponse>>>> ListarAsync([FromRoute] Guid idOrganizacao, CancellationToken cancellationToken)
         {
-            return Ok();
+            PaginacaoResponse<RecorrenciaEventoResponse> recorrencias = await _recorrenciasEventoAppServico.ListarAsync(idOrganizacao, 1, 100, cancellationToken);
+
+            return Ok(ApiResponse<PaginacaoResponse<RecorrenciaEventoResponse>>.Ok(recorrencias));
         }
 
         /// <summary>
         /// Criar uma nova recorrencia de eventos
         /// </summary>
         /// <param name="idOrganizacao">ID da organização</param>
-        /// <param name="request"></param>
+        /// <param name="request">Parametros</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [HttpPost]
@@ -75,12 +81,20 @@ namespace Convoquei.Api.Controllers.Recorrencias
             return Ok();
         }
 
+        /// <summary>
+        /// Gerar os eventos de uma recorrência de evento
+        /// </summary>
+        /// <param name="idOrganizacao"></param>
+        /// <param name="idRecorrencia"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         [HttpPost]
         [Route("{idRecorrencia:guid}/geracoes-eventos")]
-        public async Task<IActionResult> GerarEventosAsync([FromRoute] Guid idOrganizacao, [FromRoute] Guid idRecorrencia, CancellationToken cancellationToken)
+        public async Task<ActionResult<ApiResponse<int>>> GerarEventosAsync([FromRoute] Guid idOrganizacao, [FromRoute] Guid idRecorrencia, CancellationToken cancellationToken)
         {
-            await _recorrenciasEventoAppServico.GerarEventosRecorrenciaAsync(idOrganizacao, idRecorrencia, cancellationToken);
-            return Ok();
+            int eventosGerados = await _recorrenciasEventoAppServico.GerarEventosRecorrenciaAsync(idOrganizacao, idRecorrencia, cancellationToken);
+
+            return Ok(ApiResponse<int>.Ok($"Foram gerados {eventosGerados} eventos para a recorrencia."));
         }
     }
 }

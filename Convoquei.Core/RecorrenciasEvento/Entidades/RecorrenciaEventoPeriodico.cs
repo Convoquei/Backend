@@ -34,7 +34,6 @@ namespace Convoquei.Core.RecorrenciasEvento.Entidades
 
             IntervaloDias = intervaloDias;
             PrimeiraOcorrencia = dataPrimeiraOcorrencia;
-            PrevisaoProximaGeracao = PrimeiraOcorrencia.AddDays(-Organizacao.AntecedenciaDiasCriarEventosRecorrentes);
         }
 
         public override IEnumerable<Evento> GerarEventos()
@@ -75,5 +74,4 @@ namespace Convoquei.Core.RecorrenciasEvento.Entidades
             return primeiraOcorrencia.AddDays(saltos * intervaloDias);
         }
     }
-
 }
